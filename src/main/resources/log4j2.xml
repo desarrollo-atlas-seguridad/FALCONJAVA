@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="ArqAPP" packages="">
+    <Properties>
+        <Property name="log-path">/tmp</Property>
+    </Properties>
+    <Appenders>
+        <!-- appender para escribir en consola con system.out.print -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %p [%C{2}:%L] - %m%n" />
+        </Console>
+        <RollingFile name="RollingFileMyFile" fileName="${log-path}/rpa1.log"
+                     filePattern="${log-path}/arqapp-%i.log">
+            <PatternLayout>
+                <Pattern>%d %p [%C{2}:%L] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="5 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="1" />
+        </RollingFile>
+        <Async name="Async">
+            <AppenderRef ref="RollingFileMyFile"/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <Root level="all">
+            <AppenderRef ref="console" level="all"/>
+            <AppenderRef  ref="RollingFileMyFile" />
+        </Root>
+    </Loggers>
+</Configuration>

