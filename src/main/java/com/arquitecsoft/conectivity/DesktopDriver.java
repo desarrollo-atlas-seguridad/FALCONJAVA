@@ -347,7 +347,7 @@ public class DesktopDriver implements Runnable {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
                     }
                     break;
-// Presiona Click en el elemento encontrado por ID
+                // Presiona Click en el elemento encontrado por ID
                 case "write_text":
                     try {
                         if (cmd.getCommand() != null) {
@@ -551,6 +551,19 @@ public class DesktopDriver implements Runnable {
                     robot.keyRelease(java.awt.event.KeyEvent.VK_S);
                     robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
                     Main.LOG.info("Presiona ctrl + s");
+                    break;
+
+                //Crear carpetas
+                case "crear_carpeta":
+                    robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
+                    robot.keyPress(java.awt.event.KeyEvent.VK_SHIFT);
+                    robot.keyPress(java.awt.event.KeyEvent.VK_N);
+
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_SHIFT);
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_N);
+                    Main.LOG.info("Presiona crtl + shift + n");
+
                     break;
 
                 //Cierra formulario o la aplicacion

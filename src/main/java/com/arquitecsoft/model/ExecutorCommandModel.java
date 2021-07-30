@@ -171,6 +171,7 @@ public class ExecutorCommandModel {
             case "cerrar":          // [Desktop]
             case "inicio":          // [Desktop]
             case "fin":             // [Desktop]
+            case "crear_carpeta":   // [Desktop]
                 out = nextYes;
                 this.status = "OK";
                 break;
