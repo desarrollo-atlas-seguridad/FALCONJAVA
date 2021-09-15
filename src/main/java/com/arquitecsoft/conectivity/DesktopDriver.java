@@ -1,34 +1,45 @@
 package com.arquitecsoft.conectivity;
-
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.arquitecsoft.connector.DashboardRequest;
 import com.arquitecsoft.controller.Main;
-import static com.arquitecsoft.data.Data.rdp;
 import com.arquitecsoft.model.ExecutorCommandModel;
 import com.arquitecsoft.model.ExecutorDesktopModel;
 import com.arquitecsoft.util.ReadImage;
 import com.arquitecsoft.util.SendMail;
 import com.arquitecsoft.util.WriteAndReadFile;
 import com.google.gson.Gson;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.winium.DesktopOptions;
+import org.openqa.selenium.winium.WiniumDriver;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openqa.selenium.winium.DesktopOptions;
-import org.openqa.selenium.winium.WiniumDriver;
-import java.util.concurrent.TimeUnit;
-
+import static com.arquitecsoft.data.Data.rdp;
 /**
  * Clase tipo Hilo que se encarga de ejecutar los comandos de un driver desktop
  *
@@ -279,6 +290,7 @@ public class DesktopDriver implements Runnable {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
                     }
                     break;
+
 
                 // Presiona Click en el elemento encontrado por ID
                 case "click":
@@ -565,8 +577,8 @@ public class DesktopDriver implements Runnable {
                     Main.LOG.info("Presiona crtl + shift + n");
 
                     break;
+                //Cierre crear carpeta
 
-                //Cierra formulario o la aplicacion
                 case "cerrar":
                     robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
                     robot.keyPress(java.awt.event.KeyEvent.VK_F4);
@@ -593,6 +605,64 @@ public class DesktopDriver implements Runnable {
                     Main.LOG.info("Presiona alt + f4");
 
                     break;
+
+                //Funcion consumo de API AWS
+                case "aws":
+                    try {
+
+                        if (cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null) {
+                                String detectid= cmd.getProperties().get(0);
+                                String imageid= cmd.getProperties().get(1);
+                                String categoriaid= cmd.getProperties().get(2);
+
+                                URL url;
+                                URLConnection uc;
+                                StringBuilder parsedContentFromUrl = new StringBuilder();
+                                String urlString="https://53l8r4bx42.execute-api.us-east-1.amazonaws.com/Version1/rekognition?"+detectid+"&"+imageid+"&"+categoriaid;
+                                System.out.println("Getting content for URl : " + urlString);
+                                url = new URL(urlString);
+                                uc = url.openConnection();
+                                uc.connect();
+                                uc.getInputStream();
+                                BufferedInputStream in = new BufferedInputStream(uc.getInputStream());
+                                int ch;
+                                while ((ch = in.read()) != -1) {
+                                    parsedContentFromUrl.append((char) ch);
+
+                                }
+                                StringBuilder Text =parsedContentFromUrl;
+                                        Main.LOG.info("Este es el valor de la api " + Text);
+
+                                    String nuevoTexto[] = Text.toString().split(",");
+                                    String valor = "";
+
+                                    for (int i = 0 ; i < nuevoTexto.length; i ++){
+                                        valor = nuevoTexto[1].toString();
+
+                            }
+
+
+                                StringSelection stringSelection = new StringSelection(valor);
+                                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                                clipboard.setContents(stringSelection, stringSelection);
+
+                                Robot robot = new Robot();
+                                robot.keyPress(KeyEvent.VK_CONTROL);
+                                robot.keyPress(KeyEvent.VK_V);
+                                robot.keyRelease(KeyEvent.VK_V);
+                                robot.keyRelease(KeyEvent.VK_CONTROL);
+
+
+                        } else {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
+                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Main.LOG.error("ERROR :" + e);
+                    }
+                break;
 
                 case "searchtextimg":
                     try {
@@ -668,6 +738,143 @@ public class DesktopDriver implements Runnable {
                         }
                     }
 
+                    break;
+                //Funcion click_texto de API AWS
+                case "click_texto":
+
+                    String bucketName = "bucketatlasid3";
+                    String stringObjKeyName = "foto.png";
+                    String fileObjKeyName = "foto.png";
+                    //String fileName = "D:\\RPA\\Codigo\\Motor\\foto.png";
+                    String fileName = "C:\\RPAService\\foto.png";
+                    String accesskey = "AKIAUO45GKMDO5C2JDUC";
+                    String secretkeyid="q281dxHz+Q3vyS7vYwP1XqyLi1XoyYr3E39ZOW9i";
+
+                    if (cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null ) {
+                        String detectid= cmd.getProperties().get(0);
+                        String palabraid= cmd.getProperties().get(1);
+                        String categoriaid= cmd.getProperties().get(2);
+
+                        try {
+                            BufferedImage captura = new Robot().createScreenCapture(
+                                    new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()) );
+
+                            // Guardar Como JPEG
+                            File file = new File("foto" + ".png");
+                            ImageIO.write(captura, "png", file);
+
+                            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accesskey, secretkeyid);
+
+                            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                                    .withRegion("us-east-1")
+                                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                                    .build();
+
+                            // Upload a text string as a new object.
+                            s3Client.putObject(bucketName, stringObjKeyName, "Uploaded String Object");
+
+                            // Upload a file as a new object with ContentType and title specified.
+                            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, new File(fileName));
+                            ObjectMetadata metadata = new ObjectMetadata();
+                            metadata.setContentType("plain/text");
+                            metadata.addUserMetadata("title", "someTitle");
+                            request.setMetadata(metadata);
+                            s3Client.putObject(request);
+
+                            } catch (AmazonServiceException e) {
+                                // The call was transmitted successfully, but Amazon S3 couldn't process
+                                // it, so it returned an error response.
+                                e.printStackTrace();
+                                System.out.println("SUBIO EL ARCHIVO : "+e);
+                            } catch (SdkClientException e) {
+                                // Amazon S3 couldn't be contacted for a response, or the client
+                                // couldn't parse the response from Amazon S3.
+                                e.printStackTrace();
+                                System.out.println("ERROR INTENTANDO SUBIR ARCHIVO2 : "+e);
+                            }
+
+                        try{
+                            Main.LOG.info("NOMBRE DE LA VARIABLE DE LA CAPTURA : "+stringObjKeyName);
+                            URL url;
+                            URLConnection uc;
+                            StringBuilder parsedContentFromUrl = new StringBuilder();
+                            String urlString="https://53l8r4bx42.execute-api.us-east-1.amazonaws.com/Version1/rekognition?"+detectid+"&imageid="+stringObjKeyName+"&"+palabraid+"&"+categoriaid;
+                            System.out.println("Getting content for URl : " + urlString);
+                            url = new URL(urlString);
+                            uc = url.openConnection();
+                            uc.connect();
+                            uc.getInputStream();
+                            BufferedInputStream in = new BufferedInputStream(uc.getInputStream());
+                            int ch;
+                                while ((ch = in.read()) != -1) {
+                                    parsedContentFromUrl.append((char) ch);
+
+                                }
+                            StringBuilder Text =parsedContentFromUrl;
+                            String[] part1 = Text.toString().split("[,.:{}\\''\\[\\]]+");
+                            String ejex="", ejey="", mostrar="";
+
+                                    for(int i =0 ; i< part1.length; i++){
+                                        if(part1[i] == part1[7]){
+                                            String valorx = part1[i].substring(0,3);
+
+                                            if(Integer.valueOf(valorx) > 889){
+                                                double datox1 = Integer.parseInt(valorx)+(Integer.parseInt(valorx)*0.22);
+                                                int datox = (int) datox1;
+                                                ejex = String.valueOf(datox);
+                                            }else{
+                                                double datox1 = Integer.parseInt(valorx)+(Integer.parseInt(valorx)*0.35);
+                                                int datox = (int) datox1;
+                                                ejex = String.valueOf(datox);
+                                            }
+
+                                        }else if(part1[i] == part1[10]) {
+                                            String valory = part1[i].substring(0,3);
+                                            if(Integer.valueOf(valory)>800){
+                                                double datoy1 = Integer.parseInt(valory)-(Integer.parseInt(valory)*0.20);
+                                                int datoy = (int) datoy1;
+                                                ejey = String.valueOf(datoy);
+                                            }else {
+                                                double datoy1 = Integer.parseInt(valory)-(Integer.parseInt(valory)*0.18);
+                                                int datoy = (int) datoy1;
+                                                ejey = String.valueOf(datoy);
+                                            }
+                                        }
+                                    }
+                                    Main.LOG.info("Eje x :" + ejex+" Eje Y :" + ejey);
+                                    Main.LOG.info("Este es el valor de la api " + Text);
+
+                                    StringSelection stringSelection = new StringSelection("Eje X : "+ejex+" Eje Y : "+ejey+" Palabra a buscar : "+palabraid);
+                                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                                    clipboard.setContents(stringSelection, stringSelection);
+
+                                    Robot robot = new Robot();
+                                    robot.keyPress(KeyEvent.VK_CONTROL);
+                                    robot.keyPress(KeyEvent.VK_V);
+                                    robot.keyRelease(KeyEvent.VK_V);
+                                    robot.keyRelease(KeyEvent.VK_CONTROL);
+
+                                    if (ejex != null && ejey != null) {
+                                        try {
+                                            robot.mouseMove(Integer.valueOf(ejex), Integer.valueOf(ejey));
+                                            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                                            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                                            Main.LOG.info("Se realizo clic en el botón : "+palabraid);
+                                        } catch (Exception e) {
+                                            Main.LOG.info("No se pudo hacer clic en el botón : "+ palabraid);
+                                        }
+
+                                    } else {
+                                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
+                                    }
+
+                        }catch (AmazonServiceException e ){
+                            Main.LOG.error("ERROR AL INTENTAR USAR EL API DE AWS VALIDAR EL SIGUIENTE ERROR : "+ e);
+                        }
+
+                    } else {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
+                    }
                     break;
 
                 // Configura una nueva variable o reemplaza el valor de una existente             

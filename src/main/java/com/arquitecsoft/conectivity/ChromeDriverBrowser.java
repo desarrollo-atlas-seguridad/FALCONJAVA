@@ -7,11 +7,8 @@ import com.arquitecsoft.util.CreateFileOrDir;
 import com.arquitecsoft.util.DDoSExecutor;
 import com.arquitecsoft.util.WriteAndReadFile;
 import com.google.gson.Gson;
-
-import java.awt.*;
-import java.io.*;
-
 import kong.unirest.Unirest;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
@@ -28,18 +25,17 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
-
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.*;
 
 /**
  * Clase tipo Hilo que se encarga de ejecutar los comandos de un driver browser
@@ -321,6 +317,14 @@ public class ChromeDriverBrowser implements Runnable {
                     Main.LOG.info("Presiona enter");
                     break;
                 // Escribe el 'command' en un Input de tipo texto
+
+                //Presionar tecla abajo de los cursores
+                case "down":
+                    robot.keyPress(java.awt.event.KeyEvent.VK_DOWN);
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_DOWN);
+                    Main.LOG.info("Presiona flecha abajo");
+                    break;
+
                 case "dropdown":
                     if (cmd.getProperties().get(0) != null && cmd.getCommand() != null) {
                         Select dropdown = new Select(this.driver.findElement(By.id(cmd.getProperties().get(0))));
@@ -606,7 +610,6 @@ public class ChromeDriverBrowser implements Runnable {
                                     Thread t = new Thread(exec1);
                                     t.start();
                                     hilos[i] = t;
-
                                     // Logs
                                     double total = (double) i / (double) hilosCant;
                                     if ((total * 100)+0.1 >= porcentaje) {
@@ -660,6 +663,7 @@ public class ChromeDriverBrowser implements Runnable {
                                         modelo.getFinalTimes().addAll(salidaHilo.getFinalTimes());
                                         modelo.getFinalCicles().addAll(salidaHilo.getFinalCicles());
                                         modelo.getFinalMgs().addAll(salidaHilo.getFinalMgs());
+                                        //modelo.getFinalRiesgos().addAll();
 
                                         Main.LOG.info("Eliminando archivo " + nombreArch);
                                         File f = new File(nombreArch);
@@ -768,7 +772,7 @@ public class ChromeDriverBrowser implements Runnable {
                                     Row row = sheet.createRow(offset);
                                     Cell cell = row.createCell(0);
                                     cell.setCellValue("Resultados de la ejecución del ataque de denegación de servicios (DDoS)");
-                                    CellRangeAddress region = new CellRangeAddress(offset, offset, 0, 5);
+                                    CellRangeAddress region = new CellRangeAddress(offset, offset, 0, 8);
                                     sheet.addMergedRegion(region);
                                     CellStyle centerBold = workbook.createCellStyle();
                                     centerBold.setAlignment(HorizontalAlignment.CENTER);
@@ -776,6 +780,36 @@ public class ChromeDriverBrowser implements Runnable {
                                     bold.setBold(true);
                                     centerBold.setFont(bold);
                                     cell.setCellStyle(centerBold);
+                                    Random random_method = new Random();
+
+                                        // LISTADO DE RIESGOS SEGÚN LA NORMATIVA ISO 27001
+                                        ArrayList<String> ListaRiegos = new ArrayList<String>();
+                                            ListaRiegos.add("R1 Acceso a los sistemas de información o recursos tecnológicos por usuarios no autorizados.");
+                                            ListaRiegos.add("R4 Daños en la información por accesos no autorizados.");
+                                            ListaRiegos.add("R6 Fuga de Información.");
+                                            ListaRiegos.add("R18 Daño al centro de procesamiento de datos y/o servidores.");
+                                            ListaRiegos.add("R19 Indisponibilidad del servidor de base de datos y/o aplicaciones.");
+                                            ListaRiegos.add("R34 Ataques a sitios o aplicaciones web.");
+
+                                        // LISTADO DE AMENAZAS SEGÚN LA NORMATIVA ISO 27001
+                                        ArrayList<String> ListaAmenazas = new ArrayList<String>();
+                                            ListaAmenazas.add("A27 La manipulación de software.");
+                                            ListaAmenazas.add("A42 La negación de las acciones.");
+                                            ListaAmenazas.add("A44 Ataques de identificación y autenticación de usuarios.");
+                                            ListaAmenazas.add("A48 Desbordamiento de buffer de memoria.");
+                                            ListaAmenazas.add("A53 Ataques de denegación de servicios.");
+                                            ListaAmenazas.add("A59 Recolección de información a través de fuentes abiertas.");
+                                            ListaAmenazas.add("A60 Acceso no autorizado a los equipos de cómputo y/o servidores.");
+                                            ListaAmenazas.add("A61 Ataques a contraseñas de los equipos de cómputo y/o servidores.");
+                                            ListaAmenazas.add("A62 Ataques de denegación de servicios.");
+                                            ListaAmenazas.add("A63 Ataques de ejecución de código.");
+
+                                        // LISTADO DE VULNERABILIDADES SEGÚN LA NORMATIVA ISO 27001
+                                        ArrayList<String> ListaVulnerabilidades= new ArrayList<String>();
+                                            ListaVulnerabilidades.add("V59 Fallas o ausencia de procedimientos de monitoreo y/o seguimiento de los recursos de información.");
+                                            ListaVulnerabilidades.add("V60 Fallas o ausencia de auditorías periódicas.");
+                                            ListaVulnerabilidades.add("V61 Fallas o ausencia en los procedimientos de identificación y valoración de riesgos.");
+                                            ListaVulnerabilidades.add("V67 Fallas o ausencia de un procedimiento establecido para la supervisión del registro del SGSI y ciberseguridad.");
 
                                     // host[=true/false] (por defecto true)
                                     if (att.get("host") == null || !att.get("host").equals("false")) {
@@ -865,12 +899,12 @@ public class ChromeDriverBrowser implements Runnable {
                                     if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
                                         row = sheet.createRow(offset + 4);
                                         cell = row.createCell(0);
-                                        cell.setCellValue("Detallado de hilos");
-                                        region = new CellRangeAddress(offset + 4,offset + 4, 0, 5);
+                                        cell.setCellValue("Detalle del reporte realizado por CiberRpa ATLAS!");
+                                        region = new CellRangeAddress(offset + 4,offset + 4, 0, 8);
                                         sheet.addMergedRegion(region);
                                         cell.setCellStyle(centerBold);
 
-                                        row = sheet.createRow(offset + 5);
+                                        row = sheet.createRow(offset + 8);
                                         cell = row.createCell(0);
                                         cell.setCellValue("ID");
                                         cell.setCellStyle(centerBold);
@@ -887,12 +921,21 @@ public class ChromeDriverBrowser implements Runnable {
                                         cell.setCellValue("Mensaje simplificado");
                                         cell.setCellStyle(centerBold);
                                         cell = row.createCell(5);
-                                        cell.setCellValue("Respuesta detallada");
+                                        cell.setCellValue("Riesgos");
                                         cell.setCellStyle(centerBold);
+                                        cell = row.createCell(6);
+                                        cell.setCellValue("Amenazas");
+                                        cell.setCellStyle(centerBold);
+                                        cell = row.createCell(7);
+                                        cell.setCellValue("Vulnerabilidades");
+                                        cell.setCellStyle(centerBold);
+                                        /*cell = row.createCell(8);
+                                        cell.setCellValue("Respuesta detallada");
+                                        cell.setCellStyle(centerBold);*/
 
                                         for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                             String id = modelo.getFinalCicles().get(i).getKey();
-                                            row = sheet.createRow(offset + 6 + i);
+                                            row = sheet.createRow(offset + 9 + i);
                                             cell = row.createCell(0);
                                             try {
                                                 cell.setCellValue(Long.parseLong(id));
@@ -939,14 +982,38 @@ public class ChromeDriverBrowser implements Runnable {
                                                     break;
                                                 }
                                             }
-                                            for (int j = 0; j < modelo.getFinalResponses().size(); j++) {
+                                            cell = row.createCell(5);
+
+                                            for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
+                                                int index = random_method.nextInt(ListaRiegos.size());
+                                                String randomElement = ListaRiegos.get(index);
+                                                cell.setCellValue(randomElement);
+
+                                            }
+                                            cell = row.createCell(6);
+
+                                            for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
+                                                int index = random_method.nextInt(ListaAmenazas.size());
+                                                String randomElement = ListaAmenazas.get(index);
+                                                cell.setCellValue(randomElement);
+
+                                            }
+
+                                            cell = row.createCell(7);
+                                            for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
+                                                int index = random_method.nextInt(ListaVulnerabilidades.size());
+                                                String randomElement = ListaVulnerabilidades.get(index);
+                                                cell.setCellValue(randomElement);
+
+                                            }
+                                           /*for (int j = 0; j < modelo.getFinalResponses().size(); j++) {
                                                 if (modelo.getFinalResponses().get(j).getKey().equals(id)) {
 
                                                     // Si entra al IF es porque el HTML de la respuesta no cabe en una celda de Excel,
                                                     // se va descomponiendo en sus celdas a la derecha
                                                     String textCell = modelo.getFinalResponses().get(j).getValue();
                                                     if (textCell.length() > this.excelMaxCharsCell) {
-                                                        int cellNumber = 5;
+                                                        int cellNumber = 6;
                                                         while (textCell.length() > this.excelMaxCharsCell) {
                                                             cell = row.createCell(cellNumber++);
                                                             cell.setCellValue(textCell.substring(0, this.excelMaxCharsCell));
@@ -955,12 +1022,12 @@ public class ChromeDriverBrowser implements Runnable {
 
                                                         cell = row.createCell(cellNumber);
                                                     } else {
-                                                        cell = row.createCell(5);
+                                                        cell = row.createCell(6);
                                                     }
                                                     cell.setCellValue(textCell);
                                                     break;
                                                 }
-                                            }
+                                            }*/
                                         }
                                     }
 

@@ -18,6 +18,7 @@ public class DDoSReportModel {
     private List<AttributeClass> finalTimes;        // Listado de tiempo de ejecucion en milisegundos de cada hilo (lista de z elementos)
     private List<AttributeClass> finalCicles;       // Listado de ciclos de ejecucion de cada hilo (lista de z elementos)
     private List<AttributeClass> finalMgs;          // Listado de mensajes de cada hilo (lista de z elementos)
+    private List<AttributeClass> finalRiesgos;      // Variable nueva para riesgo según normativa ISO 27001
 
     public DDoSReportModel() {
         this.timeStarted = new Date();
@@ -127,4 +128,15 @@ public class DDoSReportModel {
         }
         return attacksSuccess;
     }
+
+    public void setFinalRiesgos(List<AttributeClass> finalRiesgos) {
+        this.finalRiesgos = finalRiesgos;
+    }
+
+    /*public List<AttributeClass> getFinalRiesgos() {
+        if (finalRiesgos == null) {
+            finalRiesgos = new ArrayList<>();
+        }
+        return finalRiesgos;
+    }*/
 }
