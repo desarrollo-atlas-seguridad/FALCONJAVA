@@ -872,52 +872,52 @@ public class ChromeDriverBrowser implements Runnable {
                                     }
 
                                     // cant_solicitados[=true/false] (por defecto true)
-                                    /*if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
-                                        row = sheet.createRow(offset + 3);
-                                        cell = row.createCell(0);
+                                    if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
+                                        row = sheet.createRow(  5);
+                                        cell = row.createCell(4);
                                         cell.setCellValue("Ataques solicitados:");
-                                        cell = row.createCell(2);
+                                        cell = row.createCell(5);
                                         cell.setCellValue(String.valueOf(modelo.getAttacksCountTotalRequested()));
-                                        region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
+                                        /*region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
                                         sheet.addMergedRegion(region);
-                                        offset++;
+                                        offset++;*/
                                     }
 
                                     // tiempo_solicitado[=true/false] (por defecto true)
                                     if (modelo.getAttacksTimeTotalRequested() > 0 && (att.get("tiempo_solicitado") == null || !att.get("tiempo_solicitado").equals("false"))) {
-                                        row = sheet.createRow(offset + 3);
-                                        cell = row.createCell(0);
+                                        row = sheet.createRow( 6);
+                                        cell = row.createCell(4);
                                         cell.setCellValue("Tiempo de ataque:");
-                                        cell = row.createCell(2);
+                                        cell = row.createCell(5);
                                         cell.setCellValue(modelo.getAttacksTimeTotalRequested() + " ms");
-                                        region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
+                                        /*region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
                                         sheet.addMergedRegion(region);
-                                        offset++;
+                                        offset++;*/
                                     }
 
                                     // cant_realizados[=true/false] (por defecto true)
                                     if (att.get("cant_realizados") == null || !att.get("cant_realizados").equals("false")) {
-                                        row = sheet.createRow(offset + 3);
-                                        cell = row.createCell(0);
+                                        row = sheet.createRow(7);
+                                        cell = row.createCell(4);
                                         cell.setCellValue("Ataques realizados:");
-                                        cell = row.createCell(2);
+                                        cell = row.createCell(5);
                                         cell.setCellValue(String.valueOf(modelo.getAttacksCountTotalDone()));
-                                        region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
+                                        /*region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
                                         sheet.addMergedRegion(region);
-                                        offset++;
+                                        offset++;*/
                                     }
 
                                     // cant_exitosos[=true/false] (por defecto true)
                                     if (att.get("cant_exitosos") == null || !att.get("cant_exitosos").equals("false")) {
-                                        row = sheet.createRow(offset + 3);
-                                        cell = row.createCell(0);
+                                        row = sheet.createRow(offset + 8);
+                                        cell = row.createCell(4);
                                         cell.setCellValue("Ataques exitosos:");
-                                        cell = row.createCell(2);
-                                        cell.setCellValue(String.valueOf(modelo.getAttacksCountTotalSuccess()));
+                                        cell = row.createCell(5);
+                                        /*cell.setCellValue(String.valueOf(modelo.getAttacksCountTotalSuccess()));
                                         region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
                                         sheet.addMergedRegion(region);
-                                        offset++;
-                                    }*/
+                                        offset++;*/
+                                    }
 
 
                                     // detallado_hilos[=true/false] (por defecto false)
@@ -944,7 +944,7 @@ public class ChromeDriverBrowser implements Runnable {
                                         XSSFPicture my_picture = drawing.createPicture(my_anchor, my_picture_id);
 
 
-                                        row = sheet.createRow(offset + 10); // Inicia las celdas te los titulos
+                                        row = sheet.createRow(offset + 12); // Inicia las celdas te los titulos
                                         style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
                                         bold.setColor(IndexedColors.WHITE.getIndex());
                                         cell = row.createCell(0);
@@ -1010,7 +1010,7 @@ public class ChromeDriverBrowser implements Runnable {
 
                                         for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                             String id = modelo.getFinalCicles().get(i).getKey();
-                                            row = sheet.createRow(offset + 11 + i); // cambio de donde inicia
+                                            row = sheet.createRow(offset + 13 + i); // cambio de donde inicia
                                             cell = row.createCell(0);
                                             try {
                                                 cell.setCellValue(Long.parseLong(id));
@@ -1482,26 +1482,34 @@ public class ChromeDriverBrowser implements Runnable {
                                     buf.append("<html>");
 
                                     // put in some style
-                                    buf.append("<head><style language='text/css'>");
+                                    buf.append("<head>" +
+                                            "<style language='text/css'>");
                                     buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
-                                    buf.append(".heads th{text-align: center;vertical-align: middle;}");
-                                    buf.append("</style></head>");
+                                    buf.append(".heads th{text-align: center;vertical-align: middle;}" +
+                                                ".estilo {column-count:2; }");
+                                    buf.append("</style>"+
+                                            "</head>");
 
                                     Main.LOG.info("Escribiendo datos...");
                                     buf.append("<body>");
                                     buf.append("<center class=\"titulo\"><b>Resultados de la ejecución del ataque de denegación de servicios (DDoS)</b><br/></center>");
                                     buf.append("<p>");
 
+                                    buf.append("<div class=\"estilo\">");
+                                    buf.append("<img src='atlas.jpeg' width='150' height='99' ></img>");
+
+
                                     // host[=true/false] (por defecto true)
                                     if (att.get("host") == null || !att.get("host").equals("false")) {
                                         buf.append("<b>Host: </b>").append(modelo.getHost()).append("<br/>");
                                     }
 
+
                                     // fecha_inicio[=true/false] (por defecto true)
                                     if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
                                         buf.append("<b>Inicio: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
                                     }
-
+                                    buf.append("</div>");
                                     // fecha_fin[=true/false] (por defecto true)
                                     if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
                                         buf.append("<b>Fin: </b>").append(sdf.format(modelo.getTimeFinished())).append("<br/>");
@@ -1528,8 +1536,8 @@ public class ChromeDriverBrowser implements Runnable {
                                     if (att.get("cant_exitosos") == null || !att.get("cant_exitosos").equals("false")) {
                                         buf.append("<b>Ataques exitosos: </b>").append(modelo.getAttacksCountTotalSuccess()).append("<br/>");
                                     }
-
                                     buf.append("</p>");
+
 
                                     // detallado_hilos[=true/false] (por defecto false)
                                     if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
@@ -1540,7 +1548,7 @@ public class ChromeDriverBrowser implements Runnable {
                                         buf.append("<th>Mensaje simplificado</th><th>Respuesta detallada</th>");
                                         buf.append("</tr>");
 
-                                        for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
+                                        /*for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                             String id = modelo.getFinalCicles().get(i).getKey();
 
                                             buf.append("<tr>");
@@ -1583,7 +1591,7 @@ public class ChromeDriverBrowser implements Runnable {
                                             }
 
                                             buf.append("</tr>");
-                                        }
+                                        }*/
                                         buf.append("</table>");
 
                                     }
