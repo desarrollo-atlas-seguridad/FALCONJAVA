@@ -9,12 +9,11 @@ import com.arquitecsoft.util.WriteAndReadFile;
 import com.google.gson.Gson;
 import kong.unirest.Unirest;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xwpf.usermodel.*;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -811,6 +810,18 @@ public class ChromeDriverBrowser implements Runnable {
                                             ListaVulnerabilidades.add("V61 Fallas o ausencia en los procedimientos de identificación y valoración de riesgos.");
                                             ListaVulnerabilidades.add("V67 Fallas o ausencia de un procedimiento establecido para la supervisión del registro del SGSI y ciberseguridad.");
 
+                                        //LISTADO DE CONTROLES
+                                    ArrayList<String> ListadoControles = new ArrayList<String>();
+                                        ListadoControles.add(" A.8.3.3 - Transferencia de medios físicos: Los medios que contienen información se deben proteger contra acceso no autorizado, uso indebido o corrupción durante el transporte.");
+                                        ListadoControles.add(" A.9.2.1 - Registro y cancelación del registro de usuarios: Se debe implementar un proceso formal de registro y de cancelación de registro de usuarios, para posibilitar la asignación de los derechos de acceso.");
+                                        ListadoControles.add(" A.11.1.4 - Protección contra amenazas externas y ambientales: Se debe diseñar y aplicar protección física contra desastres naturales, ataques maliciosos o accidentales.");
+                                        ListadoControles.add(" A.12.1.3 - Gestión de capacidad: Se debe hacer seguimiento al uso de recursos, hacer los ajustes, y hacer proyecciones de los requisitos de capacidad futura, para asegurar el desempeño requerido del sistema.");
+                                        ListadoControles.add(" A.12.2.1 - Controles contra códigos maliciosos: Se deben implementar controles de detección, de prevención y de recuperación, combinados con la toma de conciencia apropiada de los usuarios, para proteger contra códigos maliciosos.");
+                                        ListadoControles.add(" A.12.3.1 - Respaldo de la información: Se deben hacer copias de respaldo de la información, software e imágenes de los sistemas, y ponerlas a prueba regularmente de acuerdo con una política de copias de respaldo acordadas.");
+                                        ListadoControles.add(" A.12.4.1 - Registro de eventos: Se deben elaborar, conservar y revisar regularmente los registros acerca de actividades del usuario, excepciones, fallas y eventos de seguridad de la información.");
+                                        ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.\n");
+                                        ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
+
                                     // host[=true/false] (por defecto true)
                                     if (att.get("host") == null || !att.get("host").equals("false")) {
                                         row = sheet.createRow(offset + 2);
@@ -895,9 +906,36 @@ public class ChromeDriverBrowser implements Runnable {
                                         offset++;
                                     }
 
+                                            //============= Inserting image - START
+                                            /* Read input PNG / JPG Image into FileInputStream Object*/
+                                            InputStream my_banner_image = new FileInputStream("C:\\RPAService\\atlas.jpeg");
+                                            /* Convert picture to be added into a byte array */
+                                            byte[] bytes = IOUtils.toByteArray(my_banner_image);
+                                            /* Add Picture to Workbook, Specify picture type as PNG and Get an Index */
+                                            int my_picture_id = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+                                            /* Close the InputStream. We are ready to attach the image to workbook now */
+                                            my_banner_image.close();
+                                            /* Create the drawing container */
+                                            XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
+                                            /* Create an anchor point */
+                                            //============= Inserting image - END
+
+                                            //========adding image START
+                                            XSSFClientAnchor my_anchor = new XSSFClientAnchor();
+                                            /* Define top left corner, and we can resize picture suitable from there */
+
+                                            my_anchor.setCol1(5); //Column B
+                                            my_anchor.setRow1(offset-2); //Row 3
+                                            my_anchor.setCol2(10); //Column C
+                                            my_anchor.setRow2(offset+5); //Row 4
+
+                                            /* Invoke createPicture and pass the anchor point and ID */
+                                            XSSFPicture my_picture = drawing.createPicture(my_anchor, my_picture_id);
+                                            //========adding image END
+
                                     // detallado_hilos[=true/false] (por defecto false)
                                     if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
-                                        row = sheet.createRow(offset + 4);
+                                        row = sheet.createRow(offset + 5);
                                         cell = row.createCell(0);
                                         cell.setCellValue("Detalle del reporte realizado por CiberRpa ATLAS!");
                                         region = new CellRangeAddress(offset + 4,offset + 4, 0, 8);

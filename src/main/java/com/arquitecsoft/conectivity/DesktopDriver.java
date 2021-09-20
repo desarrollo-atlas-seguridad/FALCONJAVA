@@ -339,6 +339,23 @@ public class DesktopDriver implements Runnable {
                     }
                     break;
                 // Presiona Click en el elemento encontrado por ID
+                case "clickxy1":
+                    if (cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null) {
+                        //driver.findElement(By.name(cmd.getProperties().get(0))).click();
+                        try {
+                            robot.mouseMove(Integer.valueOf(cmd.getProperties().get(0)), Integer.valueOf(cmd.getProperties().get(1)));
+                            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+                            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                            Main.LOG.info("Clic en el boton");
+                        } catch (Exception e) {
+                            Main.LOG.info("No se pudo hacer clic en el boton");
+                        }
+
+                    } else {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
+                    }
+                    break;
+                // Presiona Click en el elemento encontrado por ID
                 case "dobleclickxy":
                     if (cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null) {
                         try {

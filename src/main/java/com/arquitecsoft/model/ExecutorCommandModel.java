@@ -174,6 +174,8 @@ public class ExecutorCommandModel {
             case "crear_carpeta":   // [Desktop]
             case "aws":   // [Desktop]
             case "click_texto": // [Desktop]
+            case "clickxy1":      // [Desktop]
+
                 out = nextYes;
                 this.status = "OK";
                 break;
