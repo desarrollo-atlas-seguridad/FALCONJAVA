@@ -757,22 +757,29 @@ public class ChromeDriverBrowser implements Runnable {
                                         sdf = new SimpleDateFormat(att.get("fechas_formato"), new Locale("es", "ES"));
                                     }
                                     XSSFWorkbook workbook = new XSSFWorkbook();
-                                    XSSFSheet sheet = workbook.createSheet("Reporte");
+                                        XSSFSheet sheet = workbook.createSheet("Reporte");
 
                                     sheet.setColumnWidth(1, 256 * 12); // Configurando ancho como para 12 caracteres
                                     sheet.setColumnWidth(2, 256 * 35); // Configurando ancho como para 35 caracteres
                                     sheet.setColumnWidth(3, 256 * 20); // Configurando ancho como para 20 caracteres
                                     sheet.setColumnWidth(4, 256 * 20); // Configurando ancho como para 20 caracteres
                                     sheet.setColumnWidth(5, 256 * 20); // Configurando ancho como para 20 caracteres
+                                    sheet.setColumnWidth(6, 256 * 20); // Configurando ancho como para 20 caracteres
+                                    sheet.setColumnWidth(7, 256 * 20); // Configurando ancho como para 20 caracteres
 
                                     Main.LOG.info("Escribiendo columnas...");
+                                    // Aqua background
+                                    CellStyle style = workbook.createCellStyle();
+                                    style.setFillForegroundColor(IndexedColors.AQUA.getIndex());
 
                                     int offset = 0;
                                     Row row = sheet.createRow(offset);
-                                    Cell cell = row.createCell(0);
-                                    cell.setCellValue("Resultados de la ejecución del ataque de denegación de servicios (DDoS)");
-                                    CellRangeAddress region = new CellRangeAddress(offset, offset, 0, 8);
-                                    sheet.addMergedRegion(region);
+                                    //Cell cell = row.createCell(0);
+                                    Cell cell = row.createCell((short) 1);
+                                    cell.setCellStyle(style);
+                                    //cell.setCellValue("Resultados de la ejecución del ataque de denegación de servicios (DDoS)");
+                                    /*CellRangeAddress region = new CellRangeAddress(offset, offset, 1, 1);
+                                    sheet.addMergedRegion(region);*/
                                     CellStyle centerBold = workbook.createCellStyle();
                                     centerBold.setAlignment(HorizontalAlignment.CENTER);
                                     XSSFFont bold = workbook.createFont();
@@ -811,55 +818,61 @@ public class ChromeDriverBrowser implements Runnable {
                                             ListaVulnerabilidades.add("V67 Fallas o ausencia de un procedimiento establecido para la supervisión del registro del SGSI y ciberseguridad.");
 
                                         //LISTADO DE CONTROLES
-                                    ArrayList<String> ListadoControles = new ArrayList<String>();
-                                        ListadoControles.add(" A.8.3.3 - Transferencia de medios físicos: Los medios que contienen información se deben proteger contra acceso no autorizado, uso indebido o corrupción durante el transporte.");
-                                        ListadoControles.add(" A.9.2.1 - Registro y cancelación del registro de usuarios: Se debe implementar un proceso formal de registro y de cancelación de registro de usuarios, para posibilitar la asignación de los derechos de acceso.");
-                                        ListadoControles.add(" A.11.1.4 - Protección contra amenazas externas y ambientales: Se debe diseñar y aplicar protección física contra desastres naturales, ataques maliciosos o accidentales.");
-                                        ListadoControles.add(" A.12.1.3 - Gestión de capacidad: Se debe hacer seguimiento al uso de recursos, hacer los ajustes, y hacer proyecciones de los requisitos de capacidad futura, para asegurar el desempeño requerido del sistema.");
-                                        ListadoControles.add(" A.12.2.1 - Controles contra códigos maliciosos: Se deben implementar controles de detección, de prevención y de recuperación, combinados con la toma de conciencia apropiada de los usuarios, para proteger contra códigos maliciosos.");
-                                        ListadoControles.add(" A.12.3.1 - Respaldo de la información: Se deben hacer copias de respaldo de la información, software e imágenes de los sistemas, y ponerlas a prueba regularmente de acuerdo con una política de copias de respaldo acordadas.");
-                                        ListadoControles.add(" A.12.4.1 - Registro de eventos: Se deben elaborar, conservar y revisar regularmente los registros acerca de actividades del usuario, excepciones, fallas y eventos de seguridad de la información.");
-                                        ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.\n");
-                                        ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
+                                        ArrayList<String> ListadoControles = new ArrayList<String>();
+                                            ListadoControles.add(" A.8.3.3 - Transferencia de medios físicos: Los medios que contienen información se deben proteger contra acceso no autorizado, uso indebido o corrupción durante el transporte.");
+                                            ListadoControles.add(" A.9.2.1 - Registro y cancelación del registro de usuarios: Se debe implementar un proceso formal de registro y de cancelación de registro de usuarios, para posibilitar la asignación de los derechos de acceso.");
+                                            ListadoControles.add(" A.11.1.4 - Protección contra amenazas externas y ambientales: Se debe diseñar y aplicar protección física contra desastres naturales, ataques maliciosos o accidentales.");
+                                            ListadoControles.add(" A.12.1.3 - Gestión de capacidad: Se debe hacer seguimiento al uso de recursos, hacer los ajustes, y hacer proyecciones de los requisitos de capacidad futura, para asegurar el desempeño requerido del sistema.");
+                                            ListadoControles.add(" A.12.2.1 - Controles contra códigos maliciosos: Se deben implementar controles de detección, de prevención y de recuperación, combinados con la toma de conciencia apropiada de los usuarios, para proteger contra códigos maliciosos.");
+                                            ListadoControles.add(" A.12.3.1 - Respaldo de la información: Se deben hacer copias de respaldo de la información, software e imágenes de los sistemas, y ponerlas a prueba regularmente de acuerdo con una política de copias de respaldo acordadas.");
+                                            ListadoControles.add(" A.12.4.1 - Registro de eventos: Se deben elaborar, conservar y revisar regularmente los registros acerca de actividades del usuario, excepciones, fallas y eventos de seguridad de la información.");
+                                            ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.  ");
+                                            ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
 
-                                    // host[=true/false] (por defecto true)
+                                        row = sheet.createRow(1);// arriba o abajo
+                                        cell = row.createCell(4); // der o izq
+                                        cell.setCellValue("Reporte :");
+                                        cell = row.createCell(5);
+                                        cell.setCellValue("(DDoS) Realizado CiberBot ATLAS ");
+
+                                // host[=true/false] (por defecto true)
                                     if (att.get("host") == null || !att.get("host").equals("false")) {
-                                        row = sheet.createRow(offset + 2);
-                                        cell = row.createCell(0);
+                                        row = sheet.createRow(2);// arriba o abajo
+                                        cell = row.createCell(4); // der o izq
                                         cell.setCellValue("Host:");
-                                        cell = row.createCell(1);
+                                        cell = row.createCell(5);// der o izq
                                         cell.setCellValue(modelo.getHost());
-                                        region = new CellRangeAddress(offset + 2, offset + 2, 1, 5);
-                                        sheet.addMergedRegion(region);
-                                        offset++;
+                                       /* region = new CellRangeAddress(offset + 2, offset + 2, 5, 6);
+                                        sheet.addMergedRegion(region);*/
+                                        //offset++;
                                     }
 
                                     // fecha_inicio[=true/false] (por defecto true)
-                                    if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
-                                        row = sheet.createRow(offset + 2);
-                                        cell = row.createCell(0);
-                                        cell.setCellValue("Inicio:");
-                                        cell = row.createCell(1);
+                                   if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
+                                        row = sheet.createRow(3);
+                                        cell = row.createCell(4);
+                                        cell.setCellValue("Hora de Inicio:");
+                                        cell = row.createCell(5);
                                         cell.setCellValue(sdf.format(modelo.getTimeStarted()));
-                                        region = new CellRangeAddress(offset + 2,offset + 2, 1, 5);
-                                        sheet.addMergedRegion(region);
-                                        offset++;
+                                       /* region = new CellRangeAddress(offset + 2,offset + 2, 1, 5);
+                                        sheet.addMergedRegion(region);*/
+                                        //offset++;
                                     }
 
                                     // fecha_fin[=true/false] (por defecto true)
-                                    if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
-                                        row = sheet.createRow(offset + 2);
-                                        cell = row.createCell(0);
-                                        cell.setCellValue("Fin:");
-                                        cell = row.createCell(1);
+                                        if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
+                                        row = sheet.createRow(4);
+                                        cell = row.createCell(4);
+                                        cell.setCellValue("Hora Fin:");
+                                        cell = row.createCell(5);
                                         cell.setCellValue(sdf.format(modelo.getTimeFinished()));
-                                        region = new CellRangeAddress(offset + 2,offset + 2, 1, 5);
-                                        sheet.addMergedRegion(region);
-                                        offset++;
+                                        /*region = new CellRangeAddress(offset + 2,offset + 2, 1, 5);
+                                        sheet.addMergedRegion(region);*/
+                                        //offset++;
                                     }
 
                                     // cant_solicitados[=true/false] (por defecto true)
-                                    if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
+                                    /*if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
                                         row = sheet.createRow(offset + 3);
                                         cell = row.createCell(0);
                                         cell.setCellValue("Ataques solicitados:");
@@ -904,76 +917,100 @@ public class ChromeDriverBrowser implements Runnable {
                                         region = new CellRangeAddress(offset + 3,offset + 3, 0, 1);
                                         sheet.addMergedRegion(region);
                                         offset++;
-                                    }
+                                    }*/
 
-                                            //============= Inserting image - START
-                                            /* Read input PNG / JPG Image into FileInputStream Object*/
-                                            InputStream my_banner_image = new FileInputStream("C:\\RPAService\\atlas.jpeg");
-                                            /* Convert picture to be added into a byte array */
-                                            byte[] bytes = IOUtils.toByteArray(my_banner_image);
-                                            /* Add Picture to Workbook, Specify picture type as PNG and Get an Index */
-                                            int my_picture_id = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-                                            /* Close the InputStream. We are ready to attach the image to workbook now */
-                                            my_banner_image.close();
-                                            /* Create the drawing container */
-                                            XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
-                                            /* Create an anchor point */
-                                            //============= Inserting image - END
-
-                                            //========adding image START
-                                            XSSFClientAnchor my_anchor = new XSSFClientAnchor();
-                                            /* Define top left corner, and we can resize picture suitable from there */
-
-                                            my_anchor.setCol1(5); //Column B
-                                            my_anchor.setRow1(offset-2); //Row 3
-                                            my_anchor.setCol2(10); //Column C
-                                            my_anchor.setRow2(offset+5); //Row 4
-
-                                            /* Invoke createPicture and pass the anchor point and ID */
-                                            XSSFPicture my_picture = drawing.createPicture(my_anchor, my_picture_id);
-                                            //========adding image END
 
                                     // detallado_hilos[=true/false] (por defecto false)
                                     if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
-                                        row = sheet.createRow(offset + 5);
-                                        cell = row.createCell(0);
-                                        cell.setCellValue("Detalle del reporte realizado por CiberRpa ATLAS!");
-                                        region = new CellRangeAddress(offset + 4,offset + 4, 0, 8);
-                                        sheet.addMergedRegion(region);
-                                        cell.setCellStyle(centerBold);
+                                        //row = sheet.createRow(offset + 9);
+                                        //cell = row.createCell(0);
+                                        //cell.setCellValue("Detalle del reporte realizado por CiberRpa ATLAS!");
+                                        /*region = new CellRangeAddress(offset + 4,offset + 4, 0, 8);
+                                        sheet.addMergedRegion(region);*/
+                                        //cell.setCellStyle(centerBold);
 
-                                        row = sheet.createRow(offset + 8);
+
+                                        InputStream my_banner_image = new FileInputStream("C:\\RPAService\\atlas.jpeg");
+                                        byte[] bytes = IOUtils.toByteArray(my_banner_image);
+                                        int my_picture_id = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+                                        my_banner_image.close();
+                                        XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
+                                        XSSFClientAnchor my_anchor = new XSSFClientAnchor();
+
+                                        my_anchor.setCol1(1); //Column B
+                                        my_anchor.setRow1(offset+2); //Row 3
+                                        my_anchor.setCol2(4); //Column C
+                                        my_anchor.setRow2(offset+8); //Row 4
+                                        XSSFPicture my_picture = drawing.createPicture(my_anchor, my_picture_id);
+
+
+                                        row = sheet.createRow(offset + 10); // Inicia las celdas te los titulos
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        bold.setColor(IndexedColors.WHITE.getIndex());
                                         cell = row.createCell(0);
                                         cell.setCellValue("ID");
-                                        cell.setCellStyle(centerBold);
+                                        style.setFont(bold);
+                                        cell.setCellStyle(style);
+
                                         cell = row.createCell(1);
                                         cell.setCellValue("HTTP Status");
-                                        cell.setCellStyle(centerBold);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+                                        //cell.setCellStyle(centerBold);
+
                                         cell = row.createCell(2);
                                         cell.setCellValue("Tiempo ejecución (Milisegundos)");
-                                        cell.setCellStyle(centerBold);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+
                                         cell = row.createCell(3);
                                         cell.setCellValue("Ciclos ejecutados");
-                                        cell.setCellStyle(centerBold);
-                                        cell = row.createCell(4);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+                                        /*cell = row.createCell(4);
                                         cell.setCellValue("Mensaje simplificado");
-                                        cell.setCellStyle(centerBold);
-                                        cell = row.createCell(5);
+                                        cell.setCellStyle(centerBold);*/
+
+                                        cell = row.createCell(4);
                                         cell.setCellValue("Riesgos");
-                                        cell.setCellStyle(centerBold);
-                                        cell = row.createCell(6);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+
+                                        cell = row.createCell(5);
                                         cell.setCellValue("Amenazas");
-                                        cell.setCellStyle(centerBold);
-                                        cell = row.createCell(7);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+
+                                        cell = row.createCell(6);
                                         cell.setCellValue("Vulnerabilidades");
-                                        cell.setCellStyle(centerBold);
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+
+                                        cell = row.createCell(7);
+                                        cell.setCellValue("Controles");
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
+
                                         /*cell = row.createCell(8);
                                         cell.setCellValue("Respuesta detallada");
                                         cell.setCellStyle(centerBold);*/
 
                                         for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                             String id = modelo.getFinalCicles().get(i).getKey();
-                                            row = sheet.createRow(offset + 9 + i);
+                                            row = sheet.createRow(offset + 11 + i); // cambio de donde inicia
                                             cell = row.createCell(0);
                                             try {
                                                 cell.setCellValue(Long.parseLong(id));
@@ -981,6 +1018,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                 cell.setCellValue(id);
                                             }
                                             cell = row.createCell(1);
+                                            sheet.autoSizeColumn(1);
                                             for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
                                                 if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
                                                     try {
@@ -992,6 +1030,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                 }
                                             }
                                             cell = row.createCell(2);
+                                            sheet.autoSizeColumn(2);
                                             for (int j = 0; j < modelo.getFinalTimes().size(); j++) {
                                                 if (modelo.getFinalTimes().get(j).getKey().equals(id)) {
                                                     try {
@@ -1003,6 +1042,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                 }
                                             }
                                             cell = row.createCell(3);
+                                            sheet.autoSizeColumn(3);
                                             for (int j = 0; j < modelo.getFinalCicles().size(); j++) {
                                                 if (modelo.getFinalCicles().get(j).getKey().equals(id)) {
                                                     try {
@@ -1013,23 +1053,23 @@ public class ChromeDriverBrowser implements Runnable {
                                                     break;
                                                 }
                                             }
-                                            cell = row.createCell(4);
+                                            /*cell = row.createCell(4);
                                             for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
                                                 if (modelo.getFinalMgs().get(j).getKey().equals(id)) {
                                                     cell.setCellValue(modelo.getFinalMgs().get(j).getValue());
                                                     break;
                                                 }
-                                            }
-                                            cell = row.createCell(5);
-
+                                            }*/
+                                            cell = row.createCell(4);
+                                            sheet.autoSizeColumn(4);
                                             for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
                                                 int index = random_method.nextInt(ListaRiegos.size());
                                                 String randomElement = ListaRiegos.get(index);
                                                 cell.setCellValue(randomElement);
 
                                             }
-                                            cell = row.createCell(6);
-
+                                            cell = row.createCell(5);
+                                            sheet.autoSizeColumn(5);
                                             for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
                                                 int index = random_method.nextInt(ListaAmenazas.size());
                                                 String randomElement = ListaAmenazas.get(index);
@@ -1037,13 +1077,25 @@ public class ChromeDriverBrowser implements Runnable {
 
                                             }
 
-                                            cell = row.createCell(7);
+                                            cell = row.createCell(6);
+                                            sheet.autoSizeColumn(6);
                                             for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
                                                 int index = random_method.nextInt(ListaVulnerabilidades.size());
                                                 String randomElement = ListaVulnerabilidades.get(index);
                                                 cell.setCellValue(randomElement);
 
                                             }
+
+                                            cell = row.createCell(7);
+                                            sheet.autoSizeColumn(7);
+                                            for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
+                                                int index = random_method.nextInt(ListadoControles.size());
+                                                String randomElement = ListadoControles.get(index);
+                                                cell.setCellValue(randomElement);
+
+                                            }
+
+
                                            /*for (int j = 0; j < modelo.getFinalResponses().size(); j++) {
                                                 if (modelo.getFinalResponses().get(j).getKey().equals(id)) {
 
