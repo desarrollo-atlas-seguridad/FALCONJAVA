@@ -1527,22 +1527,29 @@ public class ChromeDriverBrowser implements Runnable {
                                                 buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
                                                 buf.append(".heads th{text-align: center;vertical-align: middle;}");
                                                 buf.append(".estilo {column-count:2; }");
-                                                buf.append(".row {display: flex; column-count:2;}");
-                                                buf.append(".column {flex: 50%;}");
+                                                //buf.append("* { box-sizing: border-box; }");
+                                                buf.append(".flex-container { background-color:black;}");
+                                                //buf.append(".flex-container > div { background-color: #f1f1f1; width: 100px; margin: 10px; text-align: center; line-height: 75px; font-size: 30px;}");
+                                                buf.append(".row {display: flex;}");
+                                                buf.append(".column {flex: 50%; padding: 10px; background-color:#aaa;}");
                                             buf.append("</style>");
                                         buf.append("</head>");
 
                                     Main.LOG.info("Escribiendo datos...");
                                     buf.append("<body>");
                                         buf.append("<section>");
-                                            buf.append("<div class=\"row\">");
-                                                buf.append("<div class=\"column\">");
-                                                    buf.append("<img src='img/imagen1.jpg' width='300' height='900'/>");
-                                                buf.append("</div>");
-                                                buf.append("<div align='right' class=\"column\">");
-                                                    buf.append("<h1>Reporte DDoS - CiberBot</h1>");
-                                                    buf.append("<p>").append(modelo.getHost()).append("</p>");
-                                                buf.append("</div>");
+                                            buf.append("<div class='flex-container' >");
+                                                buf.append("<table>");
+                                                    buf.append("<tr>");
+                                                        buf.append("<th><img src='img/imagen1.jpg' width='300' height='900'/></th>");
+                                                        buf.append("<th style='color: white;'>");
+                                                            buf.append("<h1>Reporte DDoS - CiberBot</h1>" );
+                                                            buf.append("<p>").append(modelo.getHost()).append("</p>");
+                                                            buf.append("<b>Fecha: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
+                                                        buf.append("</th>");
+                                                    buf.append("</tr>");
+                                                buf.append("</table>");
+                                                buf.append("<a style='color: white;' align='center' > Desarrollado por Seguridad Atlas S.A.S | © Todos los derechos reservados - 2021 </a>");
                                              buf.append("</div>");
                                         buf.append("</section>");
                                     buf.append("<section>");
@@ -1592,7 +1599,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                 buf.append("<th>Amenazas</th>");
                                                 buf.append("<th>Vulnerabilidades</th>");
                                                 buf.append("<th>Riesgos</th>");
-                                                buf.append("<th>Respuesta detallada</th>");
+                                                buf.append("<th>Control</th>");
                                             buf.append("</tr>");
                                             for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                                 String id = modelo.getFinalCicles().get(i).getKey();
@@ -1642,6 +1649,25 @@ public class ChromeDriverBrowser implements Runnable {
                                                 buf.append("</tr>");
                                             }
                                         buf.append("</table>");
+                                            buf.append("<p>");
+                                                buf.append("<b>Como interpretar el reporte realizado por CiberRPA :</b>");
+                                            buf.append("</p>");
+                                            buf.append(
+                                                        "<p>1) ID : Hace referencia al código único de ejecución.</p>" +
+                                                        "<p>2) HTTP Status : Da como referencia los estados de respuesta del servidor web. </p>" +
+                                                                "<ul>" +
+                                                                    "<li>a.Respuestas informativas (100–199) </li>" +
+                                                                    "<li>b.Respuestas satisfactorias (200–299),</li>" +
+                                                                    "<li>c.Redirecciones (300–399),</li>" +
+                                                                    "<li>d.Errores de los clientes (400–499),</li>" +
+                                                                    "<li>e.y errores de los servidores (500–599).</li>" +
+                                                                "</ul>" +
+                                                        "<p>3) <b>Amenazas:</b> Según el análisis de vulnerabilidad obtenido te da un informe de las amenazas que pueden estar relacionadas con el hallazgo, centrado con la ISO 27001.</p>" +
+                                                        "<p>4) <b>Vulnerabilidad:</b> Esta hace relación a la brecha de seguridad que se está presentando, centrado en la ISO 27001.</p>" +
+                                                        "<p>5) <b>Riesgos:</b> Notificara según la vulnerabilidad obtenida un riesgo que puede estar relacionado con hallazgo que realizo el CiberBot.</p>" +
+                                                        "<p>6) <b>Control:</b> Hace referencia a una acción que se debe realizar para mitigar las vulnerabilidades, riesgos y amenazas antes mencionadas.</p>"
+                                            );
+
                                     buf.append("</section>");
                                     // detallado_hilos[=true/false] (por defecto false)
                                     /*if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
