@@ -1,4 +1,5 @@
 package com.arquitecsoft.conectivity;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -35,6 +36,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -758,12 +760,26 @@ public class DesktopDriver implements Runnable {
                     break;
                 //Funcion click_texto de API AWS
                 case "click_texto":
+                    BufferedImage captura = new Robot().createScreenCapture(
+                            new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()) );
+
+                    int leftLimit = 97; // letter 'a'
+                    int rightLimit = 122; // letter 'z'
+                    int targetStringLength = 10;
+                    Random random = new Random();
+
+                    String nombrecaptura = random.ints(leftLimit, rightLimit + 1)
+                            .limit(targetStringLength)
+                            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                            .toString();
+                    System.out.println("Nombre captura : "+nombrecaptura);
+                    File file = new File(nombrecaptura+ ".png");
+                    ImageIO.write(captura, "png", file);
 
                     String bucketName = "bucketatlasid3";
-                    String stringObjKeyName = "foto.png";
-                    String fileObjKeyName = "foto.png";
-                    //String fileName = "D:\\RPA\\Codigo\\Motor\\foto.png";
-                    String fileName = "C:\\RPAService\\foto.png";
+                    String stringObjKeyName = nombrecaptura+".png";
+                    String fileObjKeyName = nombrecaptura+".png";
+                    String fileName = "C:\\RPAService\\"+nombrecaptura+".png";
                     String accesskey = "AKIAUO45GKMDO5C2JDUC";
                     String secretkeyid="q281dxHz+Q3vyS7vYwP1XqyLi1XoyYr3E39ZOW9i";
 
@@ -773,12 +789,6 @@ public class DesktopDriver implements Runnable {
                         String categoriaid= cmd.getProperties().get(2);
 
                         try {
-                            BufferedImage captura = new Robot().createScreenCapture(
-                                    new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()) );
-
-                            // Guardar Como JPEG
-                            File file = new File("foto" + ".png");
-                            ImageIO.write(captura, "png", file);
 
                             BasicAWSCredentials awsCreds = new BasicAWSCredentials(accesskey, secretkeyid);
 
