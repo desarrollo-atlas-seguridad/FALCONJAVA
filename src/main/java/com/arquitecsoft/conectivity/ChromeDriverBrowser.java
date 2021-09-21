@@ -1478,69 +1478,173 @@ public class ChromeDriverBrowser implements Runnable {
                                         sdf = new SimpleDateFormat(att.get("fechas_formato"), new Locale("es", "ES"));
                                     }
 
+                                    // LISTADO DE RIESGOS SEGÚN LA NORMATIVA ISO 27001
+                                    ArrayList<String> ListaRiegos = new ArrayList<String>();
+                                    ListaRiegos.add("R1 Acceso a los sistemas de información o recursos tecnológicos por usuarios no autorizados.");
+                                    ListaRiegos.add("R4 Daños en la información por accesos no autorizados.");
+                                    ListaRiegos.add("R6 Fuga de Información.");
+                                    ListaRiegos.add("R18 Daño al centro de procesamiento de datos y/o servidores.");
+                                    ListaRiegos.add("R19 Indisponibilidad del servidor de base de datos y/o aplicaciones.");
+                                    ListaRiegos.add("R34 Ataques a sitios o aplicaciones web.");
+
+                                    // LISTADO DE AMENAZAS SEGÚN LA NORMATIVA ISO 27001
+                                    ArrayList<String> ListaAmenazas = new ArrayList<String>();
+                                    ListaAmenazas.add("A27 La manipulación de software.");
+                                    ListaAmenazas.add("A42 La negación de las acciones.");
+                                    ListaAmenazas.add("A44 Ataques de identificación y autenticación de usuarios.");
+                                    ListaAmenazas.add("A48 Desbordamiento de buffer de memoria.");
+                                    ListaAmenazas.add("A53 Ataques de denegación de servicios.");
+                                    ListaAmenazas.add("A59 Recolección de información a través de fuentes abiertas.");
+                                    ListaAmenazas.add("A60 Acceso no autorizado a los equipos de cómputo y/o servidores.");
+                                    ListaAmenazas.add("A61 Ataques a contraseñas de los equipos de cómputo y/o servidores.");
+                                    ListaAmenazas.add("A62 Ataques de denegación de servicios.");
+                                    ListaAmenazas.add("A63 Ataques de ejecución de código.");
+
+                                    // LISTADO DE VULNERABILIDADES SEGÚN LA NORMATIVA ISO 27001
+                                    ArrayList<String> ListaVulnerabilidades= new ArrayList<String>();
+                                    ListaVulnerabilidades.add("V59 Fallas o ausencia de procedimientos de monitoreo y/o seguimiento de los recursos de información.");
+                                    ListaVulnerabilidades.add("V60 Fallas o ausencia de auditorías periódicas.");
+                                    ListaVulnerabilidades.add("V61 Fallas o ausencia en los procedimientos de identificación y valoración de riesgos.");
+                                    ListaVulnerabilidades.add("V67 Fallas o ausencia de un procedimiento establecido para la supervisión del registro del SGSI y ciberseguridad.");
+
+                                    //LISTADO DE CONTROLES
+                                    ArrayList<String> ListadoControles = new ArrayList<String>();
+                                    ListadoControles.add(" A.8.3.3 - Transferencia de medios físicos: Los medios que contienen información se deben proteger contra acceso no autorizado, uso indebido o corrupción durante el transporte.");
+                                    ListadoControles.add(" A.9.2.1 - Registro y cancelación del registro de usuarios: Se debe implementar un proceso formal de registro y de cancelación de registro de usuarios, para posibilitar la asignación de los derechos de acceso.");
+                                    ListadoControles.add(" A.11.1.4 - Protección contra amenazas externas y ambientales: Se debe diseñar y aplicar protección física contra desastres naturales, ataques maliciosos o accidentales.");
+                                    ListadoControles.add(" A.12.1.3 - Gestión de capacidad: Se debe hacer seguimiento al uso de recursos, hacer los ajustes, y hacer proyecciones de los requisitos de capacidad futura, para asegurar el desempeño requerido del sistema.");
+                                    ListadoControles.add(" A.12.2.1 - Controles contra códigos maliciosos: Se deben implementar controles de detección, de prevención y de recuperación, combinados con la toma de conciencia apropiada de los usuarios, para proteger contra códigos maliciosos.");
+                                    ListadoControles.add(" A.12.3.1 - Respaldo de la información: Se deben hacer copias de respaldo de la información, software e imágenes de los sistemas, y ponerlas a prueba regularmente de acuerdo con una política de copias de respaldo acordadas.");
+                                    ListadoControles.add(" A.12.4.1 - Registro de eventos: Se deben elaborar, conservar y revisar regularmente los registros acerca de actividades del usuario, excepciones, fallas y eventos de seguridad de la información.");
+                                    ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.  ");
+                                    ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
+
+                                    Random random_method = new Random();
                                     StringBuilder buf = new StringBuilder();
                                     buf.append("<html>");
-
-                                    // put in some style
-                                    buf.append("<head>" +
-                                            "<style language='text/css'>");
-                                    buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
-                                    buf.append(".heads th{text-align: center;vertical-align: middle;}" +
-                                                ".estilo {column-count:2; }");
-                                    buf.append("</style>"+
-                                            "</head>");
+                                        buf.append("<head>");
+                                            buf.append("<style language='text/css'>");
+                                                buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
+                                                buf.append(".heads th{text-align: center;vertical-align: middle;}");
+                                                buf.append(".estilo {column-count:2; }");
+                                                buf.append(".row {display: flex; column-count:2;}");
+                                                buf.append(".column {flex: 50%;}");
+                                            buf.append("</style>");
+                                        buf.append("</head>");
 
                                     Main.LOG.info("Escribiendo datos...");
                                     buf.append("<body>");
-                                    buf.append("<center class=\"titulo\"><b>Resultados de la ejecución del ataque de denegación de servicios (DDoS)</b><br/></center>");
-                                    buf.append("<p>");
+                                        buf.append("<section>");
+                                            buf.append("<div class=\"row\">");
+                                                buf.append("<div class=\"column\">");
+                                                    buf.append("<img src='img/imagen1.jpg' width='300' height='900'/>");
+                                                buf.append("</div>");
+                                                buf.append("<div align='right' class=\"column\">");
+                                                    buf.append("<h1>Reporte DDoS - CiberBot</h1>");
+                                                    buf.append("<p>").append(modelo.getHost()).append("</p>");
+                                                buf.append("</div>");
+                                             buf.append("</div>");
+                                        buf.append("</section>");
+                                    buf.append("<section>");
+                                        buf.append("<div style=\"margin: 10px;\" >");
+                                            buf.append("<b>Resultados de la ejecución del ataque de denegación de servicios (DDoS)</b>");
+                                            buf.append("<img src='atlas.jpeg' width='150' height='99' ></img>");
+                                        buf.append("</div>");
+                                           // host[=true/false] (por defecto true)
+                                        buf.append("<div style=\"border: ridge #0f0fef 1px;\" >");
+                                            if (att.get("host") == null || !att.get("host").equals("false")) {
+                                                buf.append("<b>Host: </b>").append(modelo.getHost()).append("<br/>");
+                                            }
+                                            // fecha_inicio[=true/false] (por defecto true)
+                                            if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
+                                                buf.append("<b>Hora de Inicio: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
+                                            }
+                                            // fecha_fin[=true/false] (por defecto true)
+                                            if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
+                                                buf.append("<b>Hora Fin: </b>").append(sdf.format(modelo.getTimeFinished())).append("<br/>");
+                                            }
+                                            // cant_solicitados[=true/false] (por defecto true)
+                                            if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
+                                                buf.append("<b>Ataques solicitados: </b>").append(modelo.getAttacksCountTotalRequested()).append("<br/>");
+                                            }
+                                            // tiempo_solicitado[=true/false] (por defecto true)
+                                            if (modelo.getAttacksTimeTotalRequested() > 0 && (att.get("tiempo_solicitado") == null || !att.get("tiempo_solicitado").equals("false"))) {
+                                                buf.append("<b>Tiempo de ataque: </b>").append(modelo.getAttacksTimeTotalRequested()).append(" ms<br/>");
+                                            }
 
-                                    buf.append("<div class=\"estilo\">");
-                                    buf.append("<img src='atlas.jpeg' width='150' height='99' ></img>");
+                                            // cant_realizados[=true/false] (por defecto true)
+                                            if (att.get("cant_realizados") == null || !att.get("cant_realizados").equals("false")) {
+                                                buf.append("<b>Ataques realizados: </b>").append(modelo.getAttacksCountTotalDone()).append("<br/>");
+                                            }
 
+                                            // cant_exitosos[=true/false] (por defecto true)
+                                            if (att.get("cant_exitosos") == null || !att.get("cant_exitosos").equals("false")) {
+                                                buf.append("<b>Ataques exitosos: </b>").append(modelo.getAttacksCountTotalSuccess()).append("<br/>");
+                                            }
+                                        buf.append("</div>");
+                                    buf.append("</section>");
+                                    buf.append("<section>");
+                                        buf.append("<table border='1' cellspacing='0'>");
+                                            buf.append("<tr class=\"heads\"><th colspan='6'>Reporte Detallado</th></tr>");
+                                            buf.append("<tr class=\"heads\">");
+                                                buf.append("<th>ID</th>");
+                                                buf.append("<th>HTTP Status</th>");
+                                                buf.append("<th>Amenazas</th>");
+                                                buf.append("<th>Vulnerabilidades</th>");
+                                                buf.append("<th>Riesgos</th>");
+                                                buf.append("<th>Respuesta detallada</th>");
+                                            buf.append("</tr>");
+                                            for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
+                                                String id = modelo.getFinalCicles().get(i).getKey();
 
-                                    // host[=true/false] (por defecto true)
-                                    if (att.get("host") == null || !att.get("host").equals("false")) {
-                                        buf.append("<b>Host: </b>").append(modelo.getHost()).append("<br/>");
-                                    }
+                                                buf.append("<tr>");
+                                                buf.append("<td>").append(id).append("</td>");
 
+                                                    for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                        if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                            buf.append("<td>").append(modelo.getFinalCodes().get(j).getValue()).append("</td>");
+                                                            break;
+                                                        }
+                                                    }
+                                                    // Amenazas
+                                                    for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                        if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                            int index = random_method.nextInt(ListaAmenazas.size());
+                                                            String randomElement = ListaAmenazas.get(index);
+                                                            buf.append("<td>").append(randomElement).append("</td>");
+                                                        }
+                                                        }
+                                                    // Vulnerabilidades
+                                                    for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                        if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                            int index = random_method.nextInt(ListaVulnerabilidades.size());
+                                                            String randomElement = ListaVulnerabilidades.get(index);
+                                                            buf.append("<td>").append(randomElement).append("</td>");
+                                                        }
+                                                    }
+                                                    // Riegos
+                                                    for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                        if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                            int index = random_method.nextInt(ListaRiegos.size());
+                                                            String randomElement = ListaRiegos.get(index);
+                                                            buf.append("<td>").append(randomElement).append("</td>");
+                                                        }
+                                                    }
+                                                    // Controles
+                                                    for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                        if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                            int index = random_method.nextInt(ListadoControles.size());
+                                                            String randomElement = ListadoControles.get(index);
+                                                            buf.append("<td>").append(randomElement).append("</td>");
+                                                        }
+                                                    }
 
-                                    // fecha_inicio[=true/false] (por defecto true)
-                                    if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
-                                        buf.append("<b>Inicio: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
-                                    }
-                                    buf.append("</div>");
-                                    // fecha_fin[=true/false] (por defecto true)
-                                    if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
-                                        buf.append("<b>Fin: </b>").append(sdf.format(modelo.getTimeFinished())).append("<br/>");
-                                    }
-
-                                    buf.append("</p><p>");
-
-                                    // cant_solicitados[=true/false] (por defecto true)
-                                    if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
-                                        buf.append("<b>Ataques solicitados: </b>").append(modelo.getAttacksCountTotalRequested()).append("<br/>");
-                                    }
-
-                                    // tiempo_solicitado[=true/false] (por defecto true)
-                                    if (modelo.getAttacksTimeTotalRequested() > 0 && (att.get("tiempo_solicitado") == null || !att.get("tiempo_solicitado").equals("false"))) {
-                                        buf.append("<b>Tiempo de ataque: </b>").append(modelo.getAttacksTimeTotalRequested()).append(" ms<br/>");
-                                    }
-
-                                    // cant_realizados[=true/false] (por defecto true)
-                                    if (att.get("cant_realizados") == null || !att.get("cant_realizados").equals("false")) {
-                                        buf.append("<b>Ataques realizados: </b>").append(modelo.getAttacksCountTotalDone()).append("<br/>");
-                                    }
-
-                                    // cant_exitosos[=true/false] (por defecto true)
-                                    if (att.get("cant_exitosos") == null || !att.get("cant_exitosos").equals("false")) {
-                                        buf.append("<b>Ataques exitosos: </b>").append(modelo.getAttacksCountTotalSuccess()).append("<br/>");
-                                    }
-                                    buf.append("</p>");
-
-
+                                                buf.append("</tr>");
+                                            }
+                                        buf.append("</table>");
+                                    buf.append("</section>");
                                     // detallado_hilos[=true/false] (por defecto false)
-                                    if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
+                                    /*if (att.get("detallado_hilos") != null && att.get("detallado_hilos").equals("true")) {
                                         buf.append("<table border='1' cellspacing='0'>");
                                         buf.append("<tr class=\"heads\"><th colspan='6'>Detallado de hilos</th></tr>");
                                         buf.append("<tr class=\"heads\">");
@@ -1548,7 +1652,7 @@ public class ChromeDriverBrowser implements Runnable {
                                         buf.append("<th>Mensaje simplificado</th><th>Respuesta detallada</th>");
                                         buf.append("</tr>");
 
-                                        /*for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
+                                        for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                             String id = modelo.getFinalCicles().get(i).getKey();
 
                                             buf.append("<tr>");
@@ -1591,10 +1695,10 @@ public class ChromeDriverBrowser implements Runnable {
                                             }
 
                                             buf.append("</tr>");
-                                        }*/
+                                        }
                                         buf.append("</table>");
 
-                                    }
+                                    }*/
 
                                     buf.append("</body>");
                                     buf.append("</html>");
