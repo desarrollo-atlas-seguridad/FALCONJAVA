@@ -23,6 +23,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.io.Zip;
 import org.openqa.selenium.support.ui.Select;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -235,6 +236,24 @@ public class ChromeDriverBrowser implements Runnable {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad URL");
                     }
                     break;
+                case "comprimir":
+                        if(cmd.getProperties().get(0) != null){
+                            String ruta = cmd.getProperties().get(0);
+
+                            Zip zip = new Zip();
+                            try {
+                                zip.zip(new File(ruta), new File(ruta+".zip"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                System.out.println("ERROR AL COMPRIMIR EL ARCHIVO FUNCIONALIDAD COMPRIMIR " + e);
+                            }
+                        } else if (cmd.getProperties().get(0) == null) {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                        } else {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                        }
+                    break;
+                    //FUNCIONALIDAD QUE PERMITE EL ENVIO Y CAPTURA DE UNA IMAGEN POR CORREO DESARROLLADO POR JUAN DAVID MUÑOZ LÍDER TÉCNICO DE  PRODUCTOS
                 case "captura_envio":
                         if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null
                                 && cmd.getProperties().get(3) != null && cmd.getCommand() != null){
@@ -283,7 +302,8 @@ public class ChromeDriverBrowser implements Runnable {
                                 MimeMultipart multiParte = new MimeMultipart();
 
                                 BodyPart adjunto = new MimeBodyPart();
-                                adjunto.setDataHandler(new DataHandler(new FileDataSource("D:\\RPA\\Codigo\\Motor\\captura.png")));
+                                //adjunto.setDataHandler(new DataHandler(new FileDataSource("D:\\RPA\\Codigo\\Motor\\captura.png")));
+                                adjunto.setDataHandler(new DataHandler(new FileDataSource("C:\\RPAService\\captura.png")));
                                 adjunto.setFileName("captura.png");
 
                                 multiParte.addBodyPart(texto);

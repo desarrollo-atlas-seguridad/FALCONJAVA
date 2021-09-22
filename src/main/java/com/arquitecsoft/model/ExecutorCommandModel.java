@@ -142,6 +142,7 @@ public class ExecutorCommandModel {
             case "opentab":    // [Browser]
             case "key_enter":    // [Browser]
             case "captura_envio": // [Browser]
+            case "comprimir": // [Browser]
 
             //Las mismas funciones que los comandos de arriba,solo que estas son las mismas utilizadas para desktop
             case "createcon":       // [Desktop]

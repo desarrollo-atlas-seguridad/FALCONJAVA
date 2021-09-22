@@ -18,6 +18,7 @@ import com.arquitecsoft.util.WriteAndReadFile;
 import com.google.gson.Gson;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.io.Zip;
 import org.openqa.selenium.winium.DesktopOptions;
 import org.openqa.selenium.winium.WiniumDriver;
 
@@ -740,6 +741,23 @@ public class DesktopDriver implements Runnable {
                     } else {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
                     }
+                    break;
+                case "comprimir":
+                        if(cmd.getProperties().get(0) != null){
+                            String ruta = cmd.getProperties().get(0);
+
+                            Zip zip = new Zip();
+                            try {
+                                zip.zip(new File(ruta), new File(ruta+".zip"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                System.out.println("ERROR AL COMPRIMIR EL ARCHIVO FUNCIONALIDAD COMPRIMIR " + e);
+                            }
+                        } else if (cmd.getProperties().get(0) == null) {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                        } else {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                        }
                     break;
 
                 case "sendemail":
