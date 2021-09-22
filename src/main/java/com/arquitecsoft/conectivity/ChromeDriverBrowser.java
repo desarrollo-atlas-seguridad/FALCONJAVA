@@ -27,9 +27,18 @@ import org.openqa.selenium.support.ui.Select;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.imageio.ImageIO;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -225,6 +234,78 @@ public class ChromeDriverBrowser implements Runnable {
                     } else {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad URL");
                     }
+                    break;
+                case "captura_envio":
+                        if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null
+                                && cmd.getProperties().get(3) != null && cmd.getCommand() != null){
+                           // variables tomadas de las propiedades del front
+                            final String email =  cmd.getProperties().get(0);
+                            final String  password =  cmd.getProperties().get(1);
+                            String corre_destino = cmd.getProperties().get(2);
+                            String cuerpo = cmd.getProperties().get(3);
+                            String asunto = cmd.getCommand();
+
+                            //Variables del Backend
+                            String nombrecaptura = "captura";
+
+                            Properties props = new Properties();
+                            props.put("mail.smtp.auth", "true");
+                            props.put("mail.smtp.starttls.enable", "true");
+                            props.put("mail.smtp.host", "smtp.office365.com");
+                            props.put("mail.smtp.port", "587");
+                            //FUNCIONALIDAD DE CAPTURA DE LA IMAGEN
+                            BufferedImage captura = new Robot().createScreenCapture(
+                                    new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()) );
+                            File file = new File(nombrecaptura+ ".png");
+                            ImageIO.write(captura, "png", file);
+
+                            Session session = Session.getInstance(props,
+                                    new javax.mail.Authenticator() {
+                                        protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                                            return new PasswordAuthentication(email,password);
+                                        }
+                                    });
+
+                            try {
+
+                                // Define message
+                                MimeMessage message = new MimeMessage(session);
+                                message.setFrom(new InternetAddress(email));
+                                message.setSubject("FALCON "+ asunto);
+                                message.addRecipient(Message.RecipientType.TO,new InternetAddress(corre_destino));
+                                BodyPart texto = new MimeBodyPart();
+                                texto.setText(cuerpo+" \n" +
+                                        "\n" +
+                                        "\nCordialmente FALCON RPA," +
+                                        "\n" +
+                                        "\n" +
+                                        "\nDesarrollado por Seguridad Atlas LTDA.");
+                                MimeMultipart multiParte = new MimeMultipart();
+
+                                BodyPart adjunto = new MimeBodyPart();
+                                adjunto.setDataHandler(new DataHandler(new FileDataSource("D:\\RPA\\Codigo\\Motor\\captura.png")));
+                                adjunto.setFileName("captura.png");
+
+                                multiParte.addBodyPart(texto);
+                                multiParte.addBodyPart(adjunto);
+
+                                message.setContent(multiParte);
+
+                                Transport t = session.getTransport("smtp");
+                                t.connect(email,password);
+                                t.sendMessage(message,message.getAllRecipients());
+
+                                System.out.println("Enviando correo "+ message);
+                            } catch (Exception e) {
+                                System.out.println("ERROR AL ENVIAR EL MENSAJE "+e);
+                            }
+
+                        } else if (cmd.getProperties().get(0) == null) {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                        } else {
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                        }
+
                     break;
 
                 case "mkdir":
@@ -1549,7 +1630,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                         buf.append("</th>");
                                                     buf.append("</tr>");
                                                 buf.append("</table>");
-                                                buf.append("<a style='color: white;' align='center' > Desarrollado por Seguridad Atlas S.A.S | © Todos los derechos reservados - 2021 </a>");
+                                                buf.append("<a style='color: white;' align='center' > Desarrollado por Seguridad Atlas Ltda| © Todos los derechos reservados - 2021 </a>");
                                              buf.append("</div>");
                                         buf.append("</section>");
                                     buf.append("<section>");

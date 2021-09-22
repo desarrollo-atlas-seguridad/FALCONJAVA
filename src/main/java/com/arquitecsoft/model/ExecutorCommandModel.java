@@ -141,6 +141,7 @@ public class ExecutorCommandModel {
             case "copydir":    // [Browser]
             case "opentab":    // [Browser]
             case "key_enter":    // [Browser]
+            case "captura_envio": // [Browser]
 
             //Las mismas funciones que los comandos de arriba,solo que estas son las mismas utilizadas para desktop
             case "createcon":       // [Desktop]
