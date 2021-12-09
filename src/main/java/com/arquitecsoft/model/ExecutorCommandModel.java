@@ -177,6 +177,10 @@ public class ExecutorCommandModel {
             case "aws":   // [Desktop]
             case "click_texto": // [Desktop]
             case "clickxy1":      // [Desktop]
+            case "envio_correo-documento": // [Desktop]
+            case "eliminar_archivo": // [Desktop]
+            case "capturar_texto": // [Desktop]
+            case "crear_carpeta_Nombre" :   // [Desktop]
 
                 out = nextYes;
                 this.status = "OK";

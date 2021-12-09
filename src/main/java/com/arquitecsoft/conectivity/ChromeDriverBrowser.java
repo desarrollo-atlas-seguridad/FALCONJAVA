@@ -43,6 +43,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
 
@@ -255,7 +257,7 @@ public class ChromeDriverBrowser implements Runnable {
                     break;
                     //FUNCIONALIDAD QUE PERMITE EL ENVIO Y CAPTURA DE UNA IMAGEN POR CORREO DESARROLLADO POR JUAN DAVID MUÑOZ LÍDER TÉCNICO DE  PRODUCTOS
                 case "captura_envio":
-                        if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null
+                    if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null
                                 && cmd.getProperties().get(3) != null && cmd.getCommand() != null){
                            // variables tomadas de las propiedades del front
                             final String email =  cmd.getProperties().get(0);
@@ -320,14 +322,63 @@ public class ChromeDriverBrowser implements Runnable {
                                 System.out.println("ERROR AL ENVIAR EL MENSAJE "+e);
                             }
 
-                        } else if (cmd.getProperties().get(0) == null) {
-                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                    } else if (cmd.getProperties().get(0) == null) {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                    } else {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                    }
+                    break;
+                // Funcion de crear carpeta y tomar una captura de pantalla , guardandola en el directorio creado, recordar pasar en la propiedad
+                // la ruta del directorio- Funcion Creada Jmunoz
+                case "crear_carpeta_Nombre":
+                    String rutadeldirectorio, nombreDirectorio, valorComman;
+                    try {
+
+                        if (cmd.getProperties() != null ) {
+                            // Uso el formato de fecha para luego pasarlo a la variable NombreDirectorio
+                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                            nombreDirectorio= dtf.format(LocalDateTime.now());
+                            // Capturo el valor que me trae en la propiedad y nos da la ruta donde se desea crear la carpeta.
+                            rutadeldirectorio = cmd.getProperties().get(0);
+                            // Creo una carpeta con el nombre que me pasa de la propiedad.
+                            File directorio = new File(rutadeldirectorio+"/"+nombreDirectorio);
+                            if (!directorio.exists()) {
+                                if (directorio.mkdirs()) {
+                                    System.out.println("Directorio creado");
+                                } else {
+                                    System.out.println("Error al crear directorio");
+                                }
+                            }
+                            // obtenemos el tamaño del rectangulo
+                            Rectangle rectangleTam = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+                            try {
+                                Robot robot = new Robot();
+                                // tomamos una captura de pantalla( screenshot )
+                                BufferedImage bufferedImage = robot.createScreenCapture(rectangleTam);
+
+                                String nombreFichero=rutadeldirectorio+"/"+nombreDirectorio+File.separatorChar+"caputura.png";
+                                System.out.println("Generando el fichero: "+nombreFichero );
+                                FileOutputStream out = new FileOutputStream(nombreFichero);
+
+                                // esbribe la imagen a fichero
+                                ImageIO.write(bufferedImage, "png", out);
+
+                            } catch (AWTException e) {
+                                e.printStackTrace();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                         } else {
-                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     break;
-
                 case "mkdir":
                     if (cmd.getProperties().get(0) != null) {
                         CreateFileOrDir c = new CreateFileOrDir();
@@ -930,6 +981,15 @@ public class ChromeDriverBrowser implements Runnable {
                                             ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.  ");
                                             ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
 
+                                        ArrayList<String> ListadoRemediaciones = new ArrayList<String>();
+                                            ListadoRemediaciones.add("Ubicar el servidor web en una zona desmilitarizada (entre cortafuegos), también llamada DMZ, evitando así que un intruso pueda acceder a la red interna si vulnera el servidor web;");
+                                            ListadoRemediaciones.add("implementar un sistema de detección y prevención de intrusiones (IDS/IPS) que monitorizan las conexiones y nos alerta si detecta intentos de acceso no autorizados o mal uso de protocolos;");
+                                            ListadoRemediaciones.add("utilizar un dispositivo o software con funcionalidad mixta (antivirus, cortafuegos y otras), como un UTM que permite gestionar de manera unificada la mayoría de ciberamenazas que pueden afectar");
+                                            ListadoRemediaciones.add("Redundancia y balance de carga - (La redundancia consiste en tener el activo duplicado en más de un servidor y el balanceado de carga permite que se asigne a un servidor u otro en función de la carga de trabajo que esté soportando. Esta medida reduce los riesgos de sufrir uno de estos ataques, ya que al tener más de un servidor se reducirá la posibilidad de que se detenga debido a la sobrecarga. Además, aporta otras ventajas como la tolerancia a los fallos, ya que si un servidor cae, el total del trabajo lo asumiría el otro servidor.)");
+                                            ListadoRemediaciones.add("Soluciones de seguridad basadas en la nube - Una de las soluciones que cualquier servicio web considerado crítico debe tener es un cortafuegos de aplicación o WAF por sus siglas en inglés Web Application Firewall. ");
+                                            ListadoRemediaciones.add("Validación y gestión de actualizaciones al sistema operativo, softwares en el sistema entre otros, plantear un monitoreo de cantidad de solicitudes por minuto, identificando y bloqueando IPS, que gestionen mas de N cantidad de solicitudes por minuto.");
+                                            ListadoRemediaciones.add("Puede validar la siguiente pagina la cual le ayudara a gestionar esta vulnerabilidad : https://aws.amazon.com/es/shield/ddos-attack-protection/");
+
                                         row = sheet.createRow(1);// arriba o abajo
                                         cell = row.createCell(4); // der o izq
                                         cell.setCellValue("Reporte :");
@@ -1104,6 +1164,12 @@ public class ChromeDriverBrowser implements Runnable {
                                         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                                         cell.setCellStyle(style);
 
+                                        cell = row.createCell(8);
+                                        cell.setCellValue("Remediaciones");
+                                        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+                                        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                        cell.setCellStyle(style);
+
 
                                         /*cell = row.createCell(8);
                                         cell.setCellValue("Respuesta detallada");
@@ -1192,6 +1258,15 @@ public class ChromeDriverBrowser implements Runnable {
                                             for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
                                                 int index = random_method.nextInt(ListadoControles.size());
                                                 String randomElement = ListadoControles.get(index);
+                                                cell.setCellValue(randomElement);
+
+                                            }
+
+                                            cell = row.createCell(8);
+                                            sheet.autoSizeColumn(8);
+                                            for (int j = 0; j < modelo.getFinalMgs().size(); j++) {
+                                                int index = random_method.nextInt(ListadoRemediaciones.size());
+                                                String randomElement = ListadoRemediaciones.get(index);
                                                 cell.setCellValue(randomElement);
 
                                             }
@@ -1620,6 +1695,15 @@ public class ChromeDriverBrowser implements Runnable {
                                     ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.  ");
                                     ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
 
+                                    ArrayList<String> ListadoRemediaciones = new ArrayList<String>();
+                                    ListadoRemediaciones.add("Ubicar el servidor web en una zona desmilitarizada (entre cortafuegos), también llamada DMZ, evitando así que un intruso pueda acceder a la red interna si vulnera el servidor web;");
+                                    ListadoRemediaciones.add("implementar un sistema de detección y prevención de intrusiones (IDS/IPS) que monitorizan las conexiones y nos alerta si detecta intentos de acceso no autorizados o mal uso de protocolos;");
+                                    ListadoRemediaciones.add("utilizar un dispositivo o software con funcionalidad mixta (antivirus, cortafuegos y otras), como un UTM que permite gestionar de manera unificada la mayoría de ciberamenazas que pueden afectar");
+                                    ListadoRemediaciones.add("Redundancia y balance de carga - (La redundancia consiste en tener el activo duplicado en más de un servidor y el balanceado de carga permite que se asigne a un servidor u otro en función de la carga de trabajo que esté soportando. Esta medida reduce los riesgos de sufrir uno de estos ataques, ya que al tener más de un servidor se reducirá la posibilidad de que se detenga debido a la sobrecarga. Además, aporta otras ventajas como la tolerancia a los fallos, ya que si un servidor cae, el total del trabajo lo asumiría el otro servidor.)");
+                                    ListadoRemediaciones.add("Soluciones de seguridad basadas en la nube - Una de las soluciones que cualquier servicio web considerado crítico debe tener es un cortafuegos de aplicación o WAF por sus siglas en inglés Web Application Firewall. ");
+                                    ListadoRemediaciones.add("Validación y gestión de actualizaciones al sistema operativo, softwares en el sistema entre otros, plantear un monitoreo de cantidad de solicitudes por minuto, identificando y bloqueando IPS, que gestionen mas de N cantidad de solicitudes por minuto.");
+                                    ListadoRemediaciones.add("Puede validar la siguiente pagina la cual le ayudara a gestionar esta vulnerabilidad : https://aws.amazon.com/es/shield/ddos-attack-protection/");
+
                                     Random random_method = new Random();
                                     StringBuilder buf = new StringBuilder();
                                     buf.append("<html>");
@@ -1693,7 +1777,7 @@ public class ChromeDriverBrowser implements Runnable {
                                     buf.append("</section>");
                                     buf.append("<section>");
                                         buf.append("<table border='1' cellspacing='0'>");
-                                            buf.append("<tr class=\"heads\"><th colspan='6'>Reporte Detallado</th></tr>");
+                                            buf.append("<tr class=\"heads\"><th colspan='7'>Reporte Detallado</th></tr>");
                                             buf.append("<tr class=\"heads\">");
                                                 buf.append("<th>ID</th>");
                                                 buf.append("<th>HTTP Status</th>");
@@ -1701,6 +1785,7 @@ public class ChromeDriverBrowser implements Runnable {
                                                 buf.append("<th>Vulnerabilidades</th>");
                                                 buf.append("<th>Riesgos</th>");
                                                 buf.append("<th>Control</th>");
+                                                buf.append("<th>Remediaciones</th>");
                                             buf.append("</tr>");
                                             for (int i = 0; i < modelo.getFinalCicles().size(); i++) {
                                                 String id = modelo.getFinalCicles().get(i).getKey();
@@ -1746,6 +1831,15 @@ public class ChromeDriverBrowser implements Runnable {
                                                             buf.append("<td>").append(randomElement).append("</td>");
                                                         }
                                                     }
+
+                                                // Remediaciones
+                                                for (int j = 0; j < modelo.getFinalCodes().size(); j++) {
+                                                    if (modelo.getFinalCodes().get(j).getKey().equals(id)) {
+                                                        int index = random_method.nextInt(ListadoRemediaciones.size());
+                                                        String randomElement = ListadoRemediaciones.get(index);
+                                                        buf.append("<td>").append(randomElement).append("</td>");
+                                                    }
+                                                }
 
                                                 buf.append("</tr>");
                                             }
@@ -1830,11 +1924,8 @@ public class ChromeDriverBrowser implements Runnable {
                                     buf.append("</body>");
                                     buf.append("</html>");
 
-//                                    String rawString = "Entwickeln Sie mit Vergnügen";
                                     byte[] bytes = buf.toString().getBytes(StandardCharsets.UTF_8);
 
-//                                    String utf8EncodedString = new String(bytes, StandardCharsets.ISO_8859_1);
-//                                    Main.LOG.info(buf);
 
                                     // parse the markup into an xml Document
                                     DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -2530,6 +2621,56 @@ public class ChromeDriverBrowser implements Runnable {
                                     String nameFile = origen.getName().substring(0, punto) + ".pdf";
                                     fileLocation = rutaFile + "/" + nameFile;
                                 }
+                                // LISTADO DE RIESGOS SEGÚN LA NORMATIVA ISO 27001
+                                ArrayList<String> ListaRiegos = new ArrayList<String>();
+                                ListaRiegos.add("R1 Acceso a los sistemas de información o recursos tecnológicos por usuarios no autorizados.");
+                                ListaRiegos.add("R4 Daños en la información por accesos no autorizados.");
+                                ListaRiegos.add("R6 Fuga de Información.");
+                                ListaRiegos.add("R18 Daño al centro de procesamiento de datos y/o servidores.");
+                                ListaRiegos.add("R19 Indisponibilidad del servidor de base de datos y/o aplicaciones.");
+                                ListaRiegos.add("R34 Ataques a sitios o aplicaciones web.");
+
+                                // LISTADO DE AMENAZAS SEGÚN LA NORMATIVA ISO 27001
+                                ArrayList<String> ListaAmenazas = new ArrayList<String>();
+                                ListaAmenazas.add("A27 La manipulación de software.");
+                                ListaAmenazas.add("A42 La negación de las acciones.");
+                                ListaAmenazas.add("A44 Ataques de identificación y autenticación de usuarios.");
+                                ListaAmenazas.add("A48 Desbordamiento de buffer de memoria.");
+                                ListaAmenazas.add("A53 Ataques de denegación de servicios.");
+                                ListaAmenazas.add("A59 Recolección de información a través de fuentes abiertas.");
+                                ListaAmenazas.add("A60 Acceso no autorizado a los equipos de cómputo y/o servidores.");
+                                ListaAmenazas.add("A61 Ataques a contraseñas de los equipos de cómputo y/o servidores.");
+                                ListaAmenazas.add("A62 Ataques de denegación de servicios.");
+                                ListaAmenazas.add("A63 Ataques de ejecución de código.");
+
+                                // LISTADO DE VULNERABILIDADES SEGÚN LA NORMATIVA ISO 27001
+                                ArrayList<String> ListaVulnerabilidades= new ArrayList<String>();
+                                ListaVulnerabilidades.add("V59 Fallas o ausencia de procedimientos de monitoreo y/o seguimiento de los recursos de información.");
+                                ListaVulnerabilidades.add("V60 Fallas o ausencia de auditorías periódicas.");
+                                ListaVulnerabilidades.add("V61 Fallas o ausencia en los procedimientos de identificación y valoración de riesgos.");
+                                ListaVulnerabilidades.add("V67 Fallas o ausencia de un procedimiento establecido para la supervisión del registro del SGSI y ciberseguridad.");
+
+                                //LISTADO DE CONTROLES
+                                ArrayList<String> ListadoControles = new ArrayList<String>();
+                                ListadoControles.add(" A.8.3.3 - Transferencia de medios físicos: Los medios que contienen información se deben proteger contra acceso no autorizado, uso indebido o corrupción durante el transporte.");
+                                ListadoControles.add(" A.9.2.1 - Registro y cancelación del registro de usuarios: Se debe implementar un proceso formal de registro y de cancelación de registro de usuarios, para posibilitar la asignación de los derechos de acceso.");
+                                ListadoControles.add(" A.11.1.4 - Protección contra amenazas externas y ambientales: Se debe diseñar y aplicar protección física contra desastres naturales, ataques maliciosos o accidentales.");
+                                ListadoControles.add(" A.12.1.3 - Gestión de capacidad: Se debe hacer seguimiento al uso de recursos, hacer los ajustes, y hacer proyecciones de los requisitos de capacidad futura, para asegurar el desempeño requerido del sistema.");
+                                ListadoControles.add(" A.12.2.1 - Controles contra códigos maliciosos: Se deben implementar controles de detección, de prevención y de recuperación, combinados con la toma de conciencia apropiada de los usuarios, para proteger contra códigos maliciosos.");
+                                ListadoControles.add(" A.12.3.1 - Respaldo de la información: Se deben hacer copias de respaldo de la información, software e imágenes de los sistemas, y ponerlas a prueba regularmente de acuerdo con una política de copias de respaldo acordadas.");
+                                ListadoControles.add(" A.12.4.1 - Registro de eventos: Se deben elaborar, conservar y revisar regularmente los registros acerca de actividades del usuario, excepciones, fallas y eventos de seguridad de la información.");
+                                ListadoControles.add(" A.14.1.3 - Protección de transacciones de los servicios de las aplicaciones: La información involucrada en las transacciones de los servicios de las aplicaciones se debe proteger para evitar la transmisión incompleta, el enrutamiento errado, la alteración no autorizada de mensajes, la divulgación no autorizada, y la duplicación o reproducción de mensajes no autorizada.  ");
+                                ListadoControles.add(" A.16.1.3 - Reporte de debilidades de seguridad de la información: Se debe exigir a todos los empleados y contratistas que usan los servicios y sistemas de información de la organización, que observen y reporten cualquier debilidad de seguridad de la información observada o sospechada en los sistemas o servicios.");
+
+                                ArrayList<String> ListadoRemediaciones = new ArrayList<String>();
+                                ListadoRemediaciones.add("Ubicar el servidor web en una zona desmilitarizada (entre cortafuegos), también llamada DMZ, evitando así que un intruso pueda acceder a la red interna si vulnera el servidor web;");
+                                ListadoRemediaciones.add("implementar un sistema de detección y prevención de intrusiones (IDS/IPS) que monitorizan las conexiones y nos alerta si detecta intentos de acceso no autorizados o mal uso de protocolos;");
+                                ListadoRemediaciones.add("utilizar un dispositivo o software con funcionalidad mixta (antivirus, cortafuegos y otras), como un UTM que permite gestionar de manera unificada la mayoría de ciberamenazas que pueden afectar");
+                                ListadoRemediaciones.add("Redundancia y balance de carga - (La redundancia consiste en tener el activo duplicado en más de un servidor y el balanceado de carga permite que se asigne a un servidor u otro en función de la carga de trabajo que esté soportando. Esta medida reduce los riesgos de sufrir uno de estos ataques, ya que al tener más de un servidor se reducirá la posibilidad de que se detenga debido a la sobrecarga. Además, aporta otras ventajas como la tolerancia a los fallos, ya que si un servidor cae, el total del trabajo lo asumiría el otro servidor.)");
+                                ListadoRemediaciones.add("Soluciones de seguridad basadas en la nube - Una de las soluciones que cualquier servicio web considerado crítico debe tener es un cortafuegos de aplicación o WAF por sus siglas en inglés Web Application Firewall. ");
+                                ListadoRemediaciones.add("Validación y gestión de actualizaciones al sistema operativo, softwares en el sistema entre otros, plantear un monitoreo de cantidad de solicitudes por minuto, identificando y bloqueando IPS, que gestionen mas de N cantidad de solicitudes por minuto.");
+                                ListadoRemediaciones.add("Puede validar la siguiente pagina la cual le ayudara a gestionar esta vulnerabilidad : https://aws.amazon.com/es/shield/ddos-attack-protection/");
+
 
                                 Main.LOG.info("Inicializando archivo \"" + fileLocation + "\"...");
 
@@ -2543,100 +2684,91 @@ public class ChromeDriverBrowser implements Runnable {
                                         sdf = new SimpleDateFormat(att.get("fechas_formato"), new Locale("es", "ES"));
                                     }
 
+                                    Random random_method = new Random();
                                     StringBuilder buf = new StringBuilder();
                                     buf.append("<html>");
+                                        buf.append("<head>");
+                                            buf.append("<style language='text/css'>");
+                                                buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
+                                                buf.append(".heads th{text-align: center;vertical-align: middle;}");
+                                                buf.append(".estilo {column-count:2; }");
+                                                buf.append(".flex-container { background-color:black;}");
+                                                buf.append(".row {display: flex;}");
+                                                buf.append(".column {flex: 50%; padding: 10px; background-color:#aaa;}");
+                                            buf.append("</style>");
+                                        buf.append("</head>");
 
-                                    // put in some style
-                                    buf.append("<head><style language='text/css'>");
-                                    buf.append(".titulo {padding-top: 3em;margin-bottom: 2em;}");
-                                    buf.append(".heads th{text-align: center;vertical-align: middle;}");
-                                    buf.append("</style></head>");
+                                        Main.LOG.info("Escribiendo datos...");
+                                        buf.append("<body>");
+                                            buf.append("<section>");
+                                                buf.append("<div class='flex-container' >");
+                                                buf.append("<table>");
+                                                    buf.append("<tr>");
+                                                    buf.append("<th><img src='img/imagen1.jpg' width='300' height='900'/></th>");
+                                                    buf.append("<th style='color: white;'>");
+                                                        buf.append("<h1>Reporte InjectionSQL - CiberBot</h1>" );
+                                                        buf.append("<p>").append(modelo.getHost()).append("</p>");
+                                                        buf.append("<b>Fecha: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
+                                                    buf.append("</th>");
+                                                    buf.append("</tr>");
+                                                buf.append("</table>");
+                                                buf.append("<a style='color: white;' align='center' > Desarrollado por Seguridad Atlas Ltda| © Todos los derechos reservados - 2021 </a>");
+                                                buf.append("</div>");
+                                            buf.append("</section>");
+                                            buf.append("<section>");
+                                                buf.append("<div style=\"margin: 10px;\" >");
+                                                    buf.append("<b>Resultados de la ejecución del ataque de InjectionSQL </b>");
+                                                    buf.append("<img src='atlas.jpeg' width='150' height='99' ></img>");
+                                                buf.append("</div>");
+                                                buf.append("<div style=\"border: ridge #0f0fef 1px;\" >");
 
-                                    Main.LOG.info("Escribiendo datos...");
-                                    buf.append("<body>");
-                                    buf.append("<center class=\"titulo\"><b>Resultados de la ejecución del ataque SQL Injection</b><br/></center>");
-                                    buf.append("<p>");
+                                                    // host[=true/false] (por defecto true)
+                                                    if (att.get("host") == null || !att.get("host").equals("false")) {
 
-                                    // host[=true/false] (por defecto true)
-                                    if (att.get("host") == null || !att.get("host").equals("false")) {
+                                                        StringBuilder hosts = new StringBuilder();
+                                                        String coma = "";
+                                                        for (AttributeOfAttributeClass sitio : modelo.getFinalResponses()) {
+                                                            hosts.append(coma).append(sitio.getValue());
+                                                            coma = "; ";
+                                                        }
+                                                        buf.append("<b>Hosts objetivo: </b>").append(hosts.toString()).append("<br/>");
+                                                    }
+                                                buf.append("</div>");
+                                            buf.append("</section>");
+                                            buf.append("<section>");
+                                                buf.append("<table border='1' cellspacing='0'>");
+                                                    buf.append("<tr class=\"heads\"><th colspan='7'>Reporte Detallado</th></tr>");
+                                                    buf.append("<tr class=\"heads\">");
+                                                        buf.append("<th>ID</th>");
+                                                        buf.append("<th>HTTP Status</th>");
+                                                        buf.append("<th>Amenazas</th>");
+                                                        buf.append("<th>Vulnerabilidades</th>");
+                                                        buf.append("<th>Riesgos</th>");
+                                                        buf.append("<th>Control</th>");
+                                                        buf.append("<th>Remediaciones</th>");
+                                                    buf.append("</tr>");
+                                                    buf.append("<tr class=\"heads\">");
+                                                        buf.append("<h1>No se encontraron brechas de seguridad.</h1>");
+                                                    buf.append("</tr>");
+                                                    // detallado_exitosos[=true/false] (por defecto false)
+                                                    if (att.get("detallado_exitosos") != null && att.get("detallado_exitosos").equals("true")) {
+                                                        for (AttributeOfAttributeClass sitio : modelo.getFinalResponses()) {
+                                                            for (AttributeClass response : sitio.getFinalResponses()) {
 
-                                        StringBuilder hosts = new StringBuilder();
-                                        String coma = "";
-                                        for (AttributeOfAttributeClass sitio : modelo.getFinalResponses()) {
-                                            hosts.append(coma).append(sitio.getValue());
-                                            coma = "; ";
-                                        }
-                                        buf.append("<b>Hosts objetivo: </b>").append(hosts.toString()).append("<br/>");
-                                    }
-
-                                    // fecha_inicio[=true/false] (por defecto true)
-                                    if (att.get("fecha_inicio") == null || !att.get("fecha_inicio").equals("false")) {
-                                        buf.append("<b>Inicio: </b>").append(sdf.format(modelo.getTimeStarted())).append("<br/>");
-                                    }
-
-                                    // fecha_fin[=true/false] (por defecto true)
-                                    if (att.get("fecha_fin") == null || !att.get("fecha_fin").equals("false")) {
-                                        buf.append("<b>Fin: </b>").append(sdf.format(modelo.getTimeFinished())).append("<br/>");
-                                    }
-
-                                    buf.append("</p><p>");
-
-                                    // cant_solicitados[=true/false] (por defecto true)
-                                    if (modelo.getAttacksCountTotalRequested() > 0 && (att.get("cant_solicitados") == null || !att.get("cant_solicitados").equals("false"))) {
-                                        buf.append("<b>Ataques solicitados: </b>").append(modelo.getAttacksCountTotalRequested()).append("<br/>");
-                                    }
-
-                                    // cant_realizados[=true/false] (por defecto true)
-                                    if (att.get("cant_realizados") == null || !att.get("cant_realizados").equals("false")) {
-                                        buf.append("<b>Ataques realizados: </b>").append(modelo.getAttacksCountTotalDone()).append("<br/>");
-                                    }
-
-                                    // cant_exitosos[=true/false] (por defecto true)
-                                    if (att.get("cant_exitosos") == null || !att.get("cant_exitosos").equals("false")) {
-                                        buf.append("<b>Ataques exitosos: </b>").append(modelo.getAttacksCountTotalSuccess()).append("<br/>");
-                                    }
-
-                                    buf.append("</p>");
-
-                                    // detallado_exitosos[=true/false] (por defecto false)
-                                    if (att.get("detallado_exitosos") != null && att.get("detallado_exitosos").equals("true")) {
-
-                                        boolean saltos = false;
-                                        for (AttributeOfAttributeClass sitio : modelo.getFinalResponses()) {
-                                            if (saltos) {
-                                                buf.append("<br/><br/>");
-                                            } else {
-                                                saltos = true;
-                                            }
-                                            buf.append("<table border='1' cellspacing='0'>");
-                                            buf.append("<tr class=\"heads\"><th colspan='6'>Detallado de resultados exitosos (")
-                                                    .append(sitio.getFinalResponses().size()).append(")<br/>")
-                                                    .append("(Host: ").append(sitio.getValue()).append(")</th></tr>");
-                                            buf.append("<tr class=\"heads\">");
-                                            buf.append("<th>Patrón URL</th><th>Respuesta servicio</th>");
-                                            buf.append("</tr>");
-
-                                            for (AttributeClass response : sitio.getFinalResponses()) {
-
-                                                buf.append("<tr>");
-                                                buf.append("<td>").append(response.getKey()).append("</td>");
-                                                buf.append("<td>").append(escapeHtml4(response.getValue())).append("</td>");
-                                                buf.append("</tr>");
-                                            }
-                                            buf.append("</table>");
-
-                                        }
-
-                                    }
-
-                                    buf.append("</body>");
+                                                                buf.append("<tr>");
+                                                                buf.append("<td>").append(response.getKey()).append("</td>");
+                                                                buf.append("<td>").append(escapeHtml4(response.getValue())).append("</td>");
+                                                                buf.append("</tr>");
+                                                            }
+                                                        }
+                                                    }
+                                                buf.append("</table>");
+                                            buf.append("</section>");
+                                        buf.append("</body>");
                                     buf.append("</html>");
 
 //                                    String rawString = "Entwickeln Sie mit Vergnügen";
                                     byte[] bytes = buf.toString().getBytes(StandardCharsets.UTF_8);
-
-//                                    String utf8EncodedString = new String(bytes, StandardCharsets.ISO_8859_1);
-//                                    Main.LOG.info(buf);
 
                                     // parse the markup into an xml Document
                                     DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

@@ -22,27 +22,33 @@ import org.openqa.selenium.io.Zip;
 import org.openqa.selenium.winium.DesktopOptions;
 import org.openqa.selenium.winium.WiniumDriver;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.arquitecsoft.data.Data.rdp;
+
 /**
  * Clase tipo Hilo que se encarga de ejecutar los comandos de un driver desktop
  *
@@ -239,6 +245,209 @@ public class DesktopDriver implements Runnable {
                         Main.LOG.error("El comando '" + cmd.getType() + "' asigne la ruta de creacion");
                     }
                     break;
+                case "eliminar_archivo":
+                        if (cmd.getProperties().get(0) != null) {
+                            String documentoEliminar = cmd.getProperties().get(0);
+
+                            try {
+                                File fichero = new File(documentoEliminar);
+                                fichero.delete();
+                                Main.LOG.info("Archivo borrado con exito : "+documentoEliminar);
+                            } catch (Exception ex) {
+                                Logger.getLogger(DesktopDriver.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else if (cmd.getProperties().get(0) == null){
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+
+                        }  else{
+                            Main.LOG.error("El comando '" + cmd.getType() + "' asigne la ruta del archivo a eliminar ..");
+                        }
+                    break;
+                case "capturar_texto":
+                    if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null){
+                            try {
+                                //Robot robot = new Robot();
+                                String x = cmd.getProperties().get(0),y = cmd.getProperties().get(1);
+                                // Tamaña de la pantalla
+                                int width=167,height=80;
+                                // tomamos una captura de pantalla( screenshot )
+                                BufferedImage captura = new Robot().createScreenCapture(
+                                        new Rectangle(Integer.parseInt(x),Integer.parseInt(y),width,height) );
+                                // Metodo radom para poner el nombre del archivo.
+                                int leftLimit = 97; // letter 'a'
+                                int rightLimit = 122; // letter 'z'
+                                int targetStringLength = 10;
+                                Random random = new Random();
+
+                                String nombrecaptura = random.ints(leftLimit, rightLimit + 1)
+                                        .limit(targetStringLength)
+                                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                                        .toString();
+                                System.out.println("Nombre captura : "+nombrecaptura);
+                                File file = new File(nombrecaptura+ ".png");
+                                ImageIO.write(captura, "png", file);
+
+                                //VARIABLES DE USO DE AWS
+                                String bucketName = "bucketatlasid3";
+                                String stringObjKeyName = nombrecaptura+".png";
+                                String fileObjKeyName = nombrecaptura+".png";
+                                String fileName = "C:\\RPAService\\"+nombrecaptura+".png";
+                                //String fileName = "D:\\RPA\\Codigo\\Motor\\"+nombrecaptura+".png";
+                                String accesskey = "AKIAUO45GKMDO5C2JDUC";
+                                String secretkeyid="q281dxHz+Q3vyS7vYwP1XqyLi1XoyYr3E39ZOW9i";
+
+                                BasicAWSCredentials awsCreds = new BasicAWSCredentials(accesskey, secretkeyid);
+
+                                AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                                        .withRegion("us-east-1")
+                                        .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                                        .build();
+
+                                // Upload a text string as a new object.
+                                s3Client.putObject(bucketName, stringObjKeyName, "Uploaded String Object");
+
+                                // Upload a file as a new object with ContentType and title specified.
+                                PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, new File(fileName));
+                                ObjectMetadata metadata = new ObjectMetadata();
+                                metadata.setContentType("plain/text");
+                                metadata.addUserMetadata("title", "someTitle");
+                                request.setMetadata(metadata);
+                                s3Client.putObject(request);
+
+                                Main.LOG.info("NOMBRE DE LA VARIABLE DE LA CAPTURA : "+stringObjKeyName);
+                                String detectid="1",categoriaid="3";
+
+                                URL url;
+                                URLConnection uc;
+                                StringBuilder parsedContentFromUrl = new StringBuilder();
+                                String urlString="https://53l8r4bx42.execute-api.us-east-1.amazonaws.com/Version1/rekognition?detectid="+detectid+"&imageid="+stringObjKeyName+"&categoriaid="+categoriaid;
+                                System.out.println("Getting content for URl : " + urlString);
+                                url = new URL(urlString);
+                                uc = url.openConnection();
+                                uc.connect();
+                                uc.getInputStream();
+                                BufferedInputStream in = new BufferedInputStream(uc.getInputStream());
+                                int ch;
+                                while ((ch = in.read()) != -1) {
+                                    parsedContentFromUrl.append((char) ch);
+
+                                }
+
+                                    try {
+                                        StringBuilder Text =parsedContentFromUrl;
+                                        String[] part1 = Text.toString().split("[,.:{}\\''\\[\\]]+");
+                                        String palabraDelArreglo ="";
+                                        for(int i =0 ; i< part1.length; i++){
+                                            System.out.println("Partes : "+part1[i]+" i = "+i);
+                                            palabraDelArreglo = part1[i];
+                                        }
+                                        String[] palabraDelArreglo2 = palabraDelArreglo.split("\"");
+                                        //System.out.println("Nueva palabra : "+palabraDelArreglo2[1]);
+
+                                        StringSelection stringSelection = new StringSelection(palabraDelArreglo2[1]);
+                                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                                        clipboard.setContents(stringSelection, stringSelection);
+
+                                        Robot robot = new Robot();
+                                        robot.keyPress(KeyEvent.VK_CONTROL);
+                                        robot.keyPress(KeyEvent.VK_V);
+                                        robot.keyRelease(KeyEvent.VK_V);
+                                        robot.keyRelease(KeyEvent.VK_CONTROL);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                File fichero = new File(fileName);
+                                fichero.delete();
+                                System.out.println("ELEMENTO ELIMINADO "+fileName);
+
+                            } catch (AWTException e) {
+                                e.printStackTrace();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (cmd.getProperties().get(0) == null || cmd.getProperties().get(1) == null){
+                            Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+
+                        }  else{
+                            Main.LOG.error("El comando '" + cmd.getType() + "' Asigne los parametros X y Y a capturar...");
+                        }
+
+
+                    break;
+
+                case "envio_correo-documento":
+                    if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null && cmd.getProperties().get(2) != null
+                            && cmd.getProperties().get(3) != null && cmd.getProperties().get(4) != null
+                                && cmd.getProperties().get(5) != null && cmd.getProperties().get(6) != null){
+                        // variables tomadas de las propiedades del front
+                        final String email =  cmd.getProperties().get(0);
+                        final String  password =  cmd.getProperties().get(1);
+                        String corre_destino = cmd.getProperties().get(2);
+                        // Capturar Asunto del correo y el cuerpo
+                        String asunto = cmd.getProperties().get(3);
+                        String cuerpo = cmd.getProperties().get(4);
+                        // NOMBRE DEL DOCUMENTO
+                        String NombreDocumento = cmd.getProperties().get(5);
+                        String documento = cmd.getProperties().get(6);
+
+                        // Configuración correo SMTP
+                        Properties props = new Properties();
+                        props.put("mail.smtp.auth", "true");
+                        props.put("mail.smtp.starttls.enable", "true");
+                        props.put("mail.smtp.host", "smtp.office365.com");
+                        props.put("mail.smtp.port", "587");
+
+                        Session session = Session.getInstance(props,
+                                new javax.mail.Authenticator() {
+                                    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                                        return new PasswordAuthentication(email,password);
+                                    }
+                                });
+
+                        try {
+                            // Define message
+                            MimeMessage message = new MimeMessage(session);
+                            message.setFrom(new InternetAddress(email));
+                            message.setSubject("FALCON "+ asunto);
+                            message.addRecipient(Message.RecipientType.TO,new InternetAddress(corre_destino));
+                            BodyPart texto = new MimeBodyPart();
+                            texto.setText(cuerpo+" \n" +
+                                    "\n" +
+                                    "\nCordialmente FALCON RPA," +
+                                    "\n" +
+                                    "\n" +
+                                    "\nDesarrollado por Seguridad Atlas LTDA.");
+                            MimeMultipart multiParte = new MimeMultipart();
+
+                            BodyPart adjunto = new MimeBodyPart();
+                            adjunto.setDataHandler(new DataHandler(new FileDataSource(documento)));
+                            adjunto.setFileName(NombreDocumento);
+
+                            multiParte.addBodyPart(texto);
+                            multiParte.addBodyPart(adjunto);
+
+                            message.setContent(multiParte);
+
+                            Transport t = session.getTransport("smtp");
+                            t.connect(email,password);
+                            t.sendMessage(message,message.getAllRecipients());
+
+                            File fichero = new File(documento);
+                            fichero.delete();
+
+                            System.out.println("Enviando correo "+ message);
+                        } catch (Exception e) {
+                            System.out.println("ERROR AL ENVIAR EL MENSAJE "+e);
+                        }
+
+                    } else if (cmd.getProperties().get(0) == null) {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad INPUT_ID");
+                    } else {
+                        Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command'");
+                    }
+                break;
 
                 //Obtiene la ubicacion de la aplicacion para asi ejecutarla
                 case "get":
@@ -599,6 +808,73 @@ public class DesktopDriver implements Runnable {
                     break;
                 //Cierre crear carpeta
 
+                //Crear carpetas con el Nombre
+                case "crear_carpeta_Nombre":
+                    String rutadeldirectorio, nombreDirectorio, valorComman;
+                        try {
+                          /*  if(cmd.getProperties().get(0) != null && cmd.getProperties().get(1) != null
+                                    && cmd.getCommand() == "1"){
+                                // Nombre de la carpeta
+                                nombreDirectorio= cmd.getProperties().get(1);
+                                // Capturo el valor que me trae en la propiedad y nos da la ruta donde se desea crear la carpeta.
+                                rutadeldirectorio = cmd.getProperties().get(0);
+                                // Creo una carpeta con el nombre que me pasa de la propiedad.
+                                File directorio = new File(rutadeldirectorio+"/"+nombreDirectorio);
+                                if (!directorio.exists()) {
+                                    if (directorio.mkdirs()) {
+                                        System.out.println("Directorio creado");
+                                    } else {
+                                        System.out.println("Error al crear directorio");
+                                    }
+                                }
+                            }else*/
+                            if (cmd.getProperties() != null ) {
+                                // Uso el formato de fecha para luego pasarlo a la variable NombreDirectorio
+                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                nombreDirectorio= dtf.format(LocalDateTime.now());
+                                // Capturo el valor que me trae en la propiedad y nos da la ruta donde se desea crear la carpeta.
+                                rutadeldirectorio = cmd.getProperties().get(0);
+                                // Creo una carpeta con el nombre que me pasa de la propiedad.
+                                File directorio = new File(rutadeldirectorio+"/"+nombreDirectorio);
+                                if (!directorio.exists()) {
+                                    if (directorio.mkdirs()) {
+                                        System.out.println("Directorio creado");
+                                    } else {
+                                        System.out.println("Error al crear directorio");
+                                    }
+                                }
+                                // obtenemos el tamaño del rectangulo
+                                Rectangle rectangleTam = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+                                try {
+                                    Robot robot = new Robot();
+                                    // tomamos una captura de pantalla( screenshot )
+                                    BufferedImage bufferedImage = robot.createScreenCapture(rectangleTam);
+
+                                    String nombreFichero=rutadeldirectorio+"/"+nombreDirectorio+File.separatorChar+"caputura.png";
+                                    System.out.println("Generando el fichero: "+nombreFichero );
+                                    FileOutputStream out = new FileOutputStream(nombreFichero);
+
+                                    // esbribe la imagen a fichero
+                                    ImageIO.write(bufferedImage, "png", out);
+
+                                } catch (AWTException e) {
+                                    e.printStackTrace();
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+                                Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    break;
+                //Cierre crear carpeta
+
                 case "cerrar":
                     robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
                     robot.keyPress(java.awt.event.KeyEvent.VK_F4);
@@ -651,18 +927,8 @@ public class DesktopDriver implements Runnable {
 
                                 }
                                 StringBuilder Text =parsedContentFromUrl;
-                                        Main.LOG.info("Este es el valor de la api " + Text);
-
-                                    String nuevoTexto[] = Text.toString().split(",");
-                                    String valor = "";
-
-                                    for (int i = 0 ; i < nuevoTexto.length; i ++){
-                                        valor = nuevoTexto[1].toString();
-
-                            }
-
-
-                                StringSelection stringSelection = new StringSelection(valor);
+                                System.out.println("Texto : "+Text);
+                                StringSelection stringSelection = new StringSelection(Text.toString());
                                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                                 clipboard.setContents(stringSelection, stringSelection);
 
@@ -676,7 +942,6 @@ public class DesktopDriver implements Runnable {
                         } else {
                             Main.LOG.error("El comando '" + cmd.getType() + "' requiere la propiedad ELEMENT_ID");
                         }
-
 
                     } catch (Exception e) {
                         e.printStackTrace();
