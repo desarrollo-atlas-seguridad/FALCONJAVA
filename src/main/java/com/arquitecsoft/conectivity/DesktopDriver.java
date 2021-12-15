@@ -39,6 +39,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -1228,6 +1232,32 @@ public class DesktopDriver implements Runnable {
                         }
                     } else {
                         Main.LOG.error("El comando '" + cmd.getType() + "' requiere 'command' como nombre de la variable a incrementar");
+                    }
+                    break;
+                case "mover_archivos":
+                    if(cmd.getProperties().get(0) != null) {
+                        String comando = cmd.getCommand();
+                        String rutaOrigen = cmd.getProperties().get(0);
+                        String rutaDestino = cmd.getProperties().get(1);
+
+                        Path origenPath = FileSystems.getDefault().getPath(rutaOrigen);
+                        Path destinoPath = FileSystems.getDefault().getPath(rutaDestino);
+
+                        if (comando.equalsIgnoreCase("1")) {
+                            // Uso el formato de fecha para luego pasarlo a la variable fechaActual
+                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                            String fechaActual = dtf.format(LocalDateTime.now());
+
+                            destinoPath = FileSystems.getDefault().getPath(rutaDestino + fechaActual);
+                        }
+
+                        try {
+                            Files.move(origenPath, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            System.err.println(e);
+                        }
+                    }else{
+                        Main.LOG.error("El comando '" + cmd.getType() + "' asigne la ruta de origen");
                     }
                     break;
 

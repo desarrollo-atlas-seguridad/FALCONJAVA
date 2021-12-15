@@ -174,13 +174,14 @@ public class ExecutorCommandModel {
             case "inicio":          // [Desktop]
             case "fin":             // [Desktop]
             case "crear_carpeta":   // [Desktop]
-            case "aws":   // [Desktop]
-            case "click_texto": // [Desktop]
-            case "clickxy1":      // [Desktop]
+            case "aws":             // [Desktop]
+            case "click_texto":     // [Desktop]
+            case "clickxy1":        // [Desktop]
             case "envio_correo-documento": // [Desktop]
             case "eliminar_archivo": // [Desktop]
             case "capturar_texto": // [Desktop]
             case "crear_carpeta_Nombre" :   // [Desktop]
+            case "mover_archivos" : // [Desktop]
 
                 out = nextYes;
                 this.status = "OK";
