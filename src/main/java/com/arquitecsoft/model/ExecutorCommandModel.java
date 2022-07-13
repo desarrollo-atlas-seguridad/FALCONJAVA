@@ -182,6 +182,7 @@ public class ExecutorCommandModel {
             case "capturar_texto": // [Desktop]
             case "crear_carpeta_Nombre" :   // [Desktop]
             case "mover_archivos" : // [Desktop]
+            case "fecha_actual" : //[Desktop]
 
                 out = nextYes;
                 this.status = "OK";

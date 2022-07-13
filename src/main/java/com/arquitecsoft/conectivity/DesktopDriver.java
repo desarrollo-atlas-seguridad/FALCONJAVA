@@ -43,6 +43,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -1260,8 +1261,16 @@ public class DesktopDriver implements Runnable {
                         Main.LOG.error("El comando '" + cmd.getType() + "' asigne la ruta de origen");
                     }
                     break;
-
-                // Notificar en caso de no encontrar el comando
+                case "fecha_actual":
+                    //LocalDate fecha = LocalDate.now();
+                    //cmd.setProperties(fecha);
+                    robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
+                    robot.keyPress(java.awt.event.KeyEvent.VK_COMMA);
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_COMMA);
+                    robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
+                    Main.LOG.info("Presiona ctrl + ,");
+                    break;
+                    // Notificar en caso de no encontrar el comando
                 default:
                     Main.LOG.warn("Comando '" + cmd.getType() + "' no se reconoce como un comando predefinido");
                     break;
