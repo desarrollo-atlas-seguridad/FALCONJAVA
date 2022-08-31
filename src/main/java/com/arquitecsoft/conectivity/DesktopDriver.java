@@ -1262,8 +1262,8 @@ public class DesktopDriver implements Runnable {
                     }
                     break;
                 case "fecha_actual":
-                    //LocalDate fecha = LocalDate.now();
-                    //cmd.setProperties(fecha);
+                    //Funcion que oprime las teclas Ctr y , es utilizada
+                    //para insertar en una casilla de excel la fecha actual
                     robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
                     robot.keyPress(java.awt.event.KeyEvent.VK_COMMA);
                     robot.keyRelease(java.awt.event.KeyEvent.VK_COMMA);
@@ -1271,6 +1271,16 @@ public class DesktopDriver implements Runnable {
                     Main.LOG.info("Presiona ctrl + ,");
                     break;
                     // Notificar en caso de no encontrar el comando
+                case "tecla_f11":
+                    //Funcion que oprime las teclas Ctr y , es utilizada
+                    //para insertar en una casilla de excel la fecha actual
+                    robot.keyPress(KeyEvent.VK_F11);
+                    robot.keyRelease(KeyEvent.VK_F11);
+                    Main.LOG.info("Presiona f11");
+                    break;
+                // Notificar en caso de no encontrar el comando
+
+
                 default:
                     Main.LOG.warn("Comando '" + cmd.getType() + "' no se reconoce como un comando predefinido");
                     break;

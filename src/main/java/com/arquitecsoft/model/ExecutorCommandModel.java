@@ -183,6 +183,7 @@ public class ExecutorCommandModel {
             case "crear_carpeta_Nombre" :   // [Desktop]
             case "mover_archivos" : // [Desktop]
             case "fecha_actual" : //[Desktop]
+            case "tecla_f11" : //[Desktop]
 
                 out = nextYes;
                 this.status = "OK";
